@@ -6,7 +6,6 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 
 public class SendMsg_webchinese {
-
 public static void main(String[] args)throws Exception{
 
 	HttpClient client = new HttpClient();
