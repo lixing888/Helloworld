@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OldPhoto_Like_shareMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into TB_OLDPHOTO_LIKE_SHARE(
+			USERID,	
+			CREATEDATE,	
+			TYPEE,	
+			OLDPHOTOID,	
+			OLDPHOTO_LIKE_SHARE_ID
+		) values (
+			#{USERID},	
+			#{CREATEDATE},	
+			#{TYPEE},	
+			#{OLDPHOTOID},	
+			#{OLDPHOTO_LIKE_SHARE_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from TB_OLDPHOTO_LIKE_SHARE
+		where 
+			OLDPHOTO_LIKE_SHARE_ID = #{OLDPHOTO_LIKE_SHARE_ID} 
+	</delete>
+	
+	<!-- 删除-->
+	<delete id="deleteUserIdAndTypeAndoldphpto" parameterType="pd">
+		delete from TB_OLDPHOTO_LIKE_SHARE
+		where 
+			USERID = #{USERID} and TYPEE=#{TYPEE} and OLDPHOTOID=#{OLDPHOTOID}
+	</delete>
+	
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  TB_OLDPHOTO_LIKE_SHARE
+			set 
+			OLDPHOTO_LIKE_SHARE_ID = OLDPHOTO_LIKE_SHARE_ID
+			where 
+				OLDPHOTO_LIKE_SHARE_ID = #{OLDPHOTO_LIKE_SHARE_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			USERID,	
+			CREATEDATE,	
+			TYPEE,	
+			OLDPHOTOID,	
+			OLDPHOTO_LIKE_SHARE_ID
+		from 
+			TB_OLDPHOTO_LIKE_SHARE
+		where 
+			OLDPHOTO_LIKE_SHARE_ID = #{OLDPHOTO_LIKE_SHARE_ID}
+	</select>
+	
+		<!-- 通过OLDPHOTOID和TYPEE获取数据 -->
+	<select id="findByOldphotoId" parameterType="pd" resultType="pd">
+		select 
+			USERID,	
+			TYPEE,	
+			OLDPHOTOID
+		from 
+			TB_OLDPHOTO_LIKE_SHARE
+		where 
+			OLDPHOTOID = #{OLDPHOTOID} 
+		and
+			TYPEE=#{TYPEE}
+	</select>
+	
+		<!-- 通过OLDPHOTOID和TYPEE and USERID获取数据 -->
+	<select id="findByOldphotoIdAndTypeAndUserId" parameterType="pd" resultType="pd">
+		select 
+			USERID,	
+			TYPEE,	
+			OLDPHOTOID
+		from 
+			TB_OLDPHOTO_LIKE_SHARE
+		where 
+			OLDPHOTOID = #{OLDPHOTOID} 
+		and
+			TYPEE=#{TYPEE}
+		and  
+			USERID=#{USERID}
+	</select>
+	
+		<!-- 通过TYPEE and USERID获取数据 -->
+	<select id="findByTypedAndUserId" parameterType="pd" resultType="pd">
+		select 
+			OLDPHOTOID
+		from 
+			TB_OLDPHOTO_LIKE_SHARE
+		where 
+			TYPEE=#{TYPEE}
+		and  
+			USERID=#{USERID}
+		
+	</select>
+	
+			<!-- 通过TYPEE and USERID获取数据 -->
+	<select id="findByUserId" parameterType="pd" resultType="pd">
+		select 
+			TYPEE,	
+			OLDPHOTOID
+		from 
+			TB_OLDPHOTO_LIKE_SHARE
+		where 
+			USERID=#{USERID}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.USERID,	
+				a.CREATEDATE,	
+				a.TYPEE,	
+				a.OLDPHOTOID,	
+				a.OLDPHOTO_LIKE_SHARE_ID,
+				b.USERNAME,
+				b.LINKNBR
+		from 
+				TB_OLDPHOTO_LIKE_SHARE a ,TB_BJJDUSERINFO b 
+		where
+				a.USERID=b.BJJDUSERINFO_ID and a.OLDPHOTOID= #{pd.OLDPHOTO_ID} and a.TYPEE=#{pd.TYPEE}
+				<if test="pd.lastLoginStart!= null and pd.lastLoginStart != '' and pd.lastLoginEnds != null and pd.lastLoginEnds != '' ">
+			and    a.CREATEDATE between #{pd.lastLoginStart} and #{pd.lastLoginEnds}
+				</if>
+				<if test="pd.field1!= null and pd.field1 != ''">
+			and
+					b.USERNAME LIKE CONCAT(CONCAT('%', #{pd.field1}),'%')
+				</if>
+		
+				<if test="pd.field3!= null and pd.field3 != ''">
+			and    b.LINKNBR LIKE CONCAT(CONCAT('%', #{pd.field3}),'%')
+				</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.USERID,	
+				a.CREATEDATE,	
+				a.TYPEE,	
+				a.OLDPHOTOID,	
+				a.OLDPHOTO_LIKE_SHARE_ID,
+				b.USERNAME,
+				b.LINKNBR
+		from 
+				TB_OLDPHOTO_LIKE_SHARE a ,TB_BJJDUSERINFO b 
+		where
+				a.USERID=b.BJJDUSERINFO_ID and a.OLDPHOTOID= #{OLDPHOTOID} and a.TYPEE=#{TYPEE}
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from TB_OLDPHOTO_LIKE_SHARE
+		where 
+			OLDPHOTO_LIKE_SHARE_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

@@ -1,0 +1,3221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BjjdUserInfoMapper">
+	
+	<!-- excel到处 -->
+	
+	<!-- 导出忘记密码信息 -->
+	<select id="toExcelforgetPwdList" parameterType="pd" resultType="pd">
+		SELECT
+			a.ID,
+			a.USERID,
+			a.USERNAME,
+			b.PASSWORD,
+			a.LINKNBR,
+			a.FRIENDNAME1,
+			a.FRIENDNAME2,
+			a.CREATEDATE,
+			a.STATE
+		FROM
+			TB_FORGETPWD a,
+			TB_BJJDUSERINFO b
+		where 
+          a.USERID=b.BJJDUSERINFO_ID
+				
+	</select>
+	
+	<!-- daochu用户注册列表   需要认证的按照时间排序-->
+	<select id="toExcelRenzheng" parameterType="pd" resultType="pd">
+		select
+				a.BJJDUSERINFO_ID,	
+				a.USERNAME,	
+				a.ACCOUNT,	
+				a.PASSWORD,	
+				a.XUEYUAN,	
+				a.ZHAUNGYE,	
+				a.NIANJIE,	
+				a.SEX,	
+				a.LINKNBR,	
+				a.EMAIL,	
+				a.POSTID,	
+				a.YAOQINGCODE,	
+				a.CREATEDATE,	
+				a.STATE,	
+				a.XUELI,
+				a.RUXUEPICURL,
+				a.BIYEPICURL,
+				a.NOWPICURL,	
+				a.FROMUSERID,	
+				a.ISOPENFRIENDYZ,	
+				a.ISAGREENSEEMYPIC					
+		    from 
+				TB_BJJDUSERINFO a 
+			where a.STATE='2'
+				ORDER BY CREATEDATE DESC
+			
+	</select>	
+			
+	<!-- 导出建议信息 -->
+	<select id="toExcelSuggest" parameterType="pd" resultType="pd">
+		select
+			a.ID,	
+			a.USERID,	
+			b.USERNAME,
+			b.LINKNBR,
+			a.CONTENT,
+			a.TYPE,
+			a.STATE,
+			a.CREATEDATE	
+		  from TB_SUGGEST a,TB_BJJDUSERINFO b
+		  where a.USERID=b.BJJDUSERINFO_ID
+				
+	</select>
+	
+	<!-- 导出投诉信息 -->
+	<select id="toExcelComplain" parameterType="pd" resultType="pd">
+		select
+			a.ID,	
+			a.USERID,	
+			b.USERNAME,
+			b.LINKNBR,
+			a.COMPLAIN,
+			a.TYPE,
+			a.STATE,
+			a.RESULT,
+			a.CREATEDATE	
+		  from TB_COMPLAIN a,TB_BJJDUSERINFO b
+		  where a.USERID=b.BJJDUSERINFO_ID
+	</select>
+	
+	
+	<!-- 导出群组信息-->
+	<select id="toExcelGroup" parameterType="pd" resultType="pd">
+		select
+			ID,	
+			GROUPID,	
+			GROUPNAME,
+			TYPE,
+			STATE,
+			CREATERID,
+			PICURL,
+			CREATEDATE		
+		from 
+			TB_GROUP
+				
+	</select>
+	
+		<!-- 用户注册列表   全量按照时间排序-->
+	<select id="toExcel" parameterType="pd" resultType="pd">
+		select
+				a.USERNAME,		
+				a.XUELI,	
+				a.ZHAUNGYE,	
+				a.NIANJIE,		
+				 CASE a.SEX
+					WHEN '1' THEN '男'
+					ELSE '女' END AS SEX,
+				a.LINKNBR,	
+				a.EMAIL,		
+				a.YAOQINGCODE,	
+				a.CREATEDATE,	
+				 CASE a.STATE
+					WHEN '1' THEN '注册成功'
+					WHEN '3' THEN '未通过认证'
+					ELSE '禁用' END AS STATE		
+		from 
+				TB_BJJDUSERINFO a 
+				where 1=1 and STATE in('1','3','5')
+		        ORDER BY a.CREATEDATE DESC
+				
+	</select>
+	<!-- 在字典中  获取专业getZhuanye -->
+	<select id="getZhuanye" parameterType="pd" resultType="pd">
+	    SELECT
+	      NAME
+            FROM
+	       sys_dictionaries
+              WHERE
+	              PARENT_ID = #{zdId}
+	 </select>             
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into TB_BJJDUSERINFO(
+				
+			USERNAME,	
+			ACCOUNT,	
+			PASSWORD,	
+			XUEYUAN,	
+			ZHAUNGYE,	
+			NIANJIE,	
+			SEX,	
+			LINKNBR,	
+			EMAIL,	
+			POSTID,	
+			YAOQINGCODE,	
+			CREATEDATE,	
+			STATE,	
+			XUELI,	
+			FROMUSERID,	
+			BJJDUSERINFO_ID
+		) values (
+				
+			#{USERNAME},	
+			#{ACCOUNT},	
+			#{PASSWORD},	
+			#{XUEYUAN},	
+			#{ZHAUNGYE},	
+			#{NIANJIE},	
+			#{SEX},	
+			#{LINKNBR},	
+			#{EMAIL},	
+			#{POSTID},	
+			#{YAOQINGCODE},	
+			#{CREATEDATE},	
+			#{STATE},	
+			#{XUELI},	
+			#{FROMUSERID},		
+			#{BJJDUSERINFO_ID}
+		)
+	</insert>
+	
+	<!-- 新增用户扩展信息-->
+	<insert id="saveUserMeg" parameterType="pd">
+		insert into TB_USERSMEG(
+			ID,	
+			USERID,	
+			WORKUNITS,
+			DUTYS,
+			HANGYE,
+			DIQU,
+			BENKEZY,
+			BENKEBEGINDATE,
+			BENKEENDDATE,
+			SHUOSHIZY,
+			SHUOSHIBEGINDATE,
+			SHUOSHIENDDATE,
+			STEACHER,
+			BOSHIZY,
+			BOSHIBEGINDATE,	
+			BOSHIENDDATE,
+			BTEACHER,
+			BAK1,
+			CREATEDATE	
+		) values (
+			#{ID},	
+			#{USERID},	
+			#{WORKUNITS},	
+			#{HANGYE},	
+			#{DIQU},	
+			#{ZHAUNGYE},	
+			#{BENKEZY},	
+			#{BENKEBEGINDATE},	
+			#{BENKEENDDATE},	
+			#{SHUOSHIZY},	
+			#{SHUOSHIBEGINDATE},	
+			#{SHUOSHIENDDATE},	
+			#{STEACHER},	
+			#{BOSHIZY},	
+			#{BOSHIBEGINDATE},	
+			#{BOSHIENDDATE},	
+			#{BTEACHER},	
+			#{USERNAME},	
+			#{CREATEDATE}
+		)
+	</insert>
+	
+	<!-- 新增用户信息到用户认证表中 之前没有在认证表保存过的数据 -->
+	<insert id="saveStudentBak" parameterType="pd">
+		insert into TB_STUDENTBAK(
+			ID,	
+			USERID,	
+			USERNAME,
+			STUNO,
+			SEX,
+		    BRITHDAY,
+			ZHUANYE,
+			XUELI,
+			STARTDATE,
+			ENDDATE,
+			TEACHER,
+			LINKNBR,
+			WORKUNIT,
+			DUTY,
+			DIQU,	
+			HANGYE,
+			MAILBOX,
+			CLASS,
+			PICURL,
+			STATE
+		) values (
+			#{ID},	
+			#{USERID},	
+			#{USERNAME},
+			#{STUNO},
+			#{SEX},
+		    #{BRITHDAY},
+			#{ZHUANYE},
+			#{XUELI},
+			#{STARTDATE},
+			#{ENDDATE},
+			#{TEACHER},
+			#{LINKNBR},
+			#{WORKUNIT},
+			#{DUTY},
+			#{DIQU},	
+			#{HANGYE},
+			#{MAILBOX},
+			#{CLASS},
+			#{PICURL},
+			#{STATE}
+		)
+	</insert>
+	
+	<!-- 手动忘记密码添加 -->
+	<insert id="saveForgetPwd" parameterType="pd">
+		insert into TB_FORGETPWD(
+			ID,	
+			USERID,	
+			USERNAME,
+			FRIENDNAME1,
+			FRIENDNAME2,
+		    LINKNBR,
+		    CLASSROOM,
+			CREATEDATE,
+			STATE
+		) values (
+			#{ID},	
+			#{USERID},	
+			#{USERNAME},
+			#{FRIENDNAME1},
+			#{FRIENDNAME2},
+		    #{LINKNBR},
+		    #{CLASSROOM},
+			#{CREATEDATE},
+			#{STATE}
+        )	
+	</insert>
+	
+	<!--保存学生认证信息数据   -->
+	<insert id="saveStudentbak" parameterType="pd">
+		insert into TB_STUDENTBAK(
+			ID,	
+			USERNAME,
+			STUNO,
+			BRITHDAY,
+		    SEX,
+		    XUELI,
+			ZHUANYE,
+			STARTDATE,
+			ENDDATE,
+			STATE
+		) values (
+			#{ID},		
+			#{USERNAME},
+			#{STUNO},
+			#{BRITHDAY},
+		    #{SEX},
+		    #{XUELI},
+			#{ZHUANYE},
+			#{STARTDATE},
+			#{ENDDATE},
+			#{STATE}
+        )	
+	</insert>
+	
+	<!-- 将个人发送的信息存到数据库中 -->
+	<insert id="sendMessagePerson" parameterType="pd">
+		insert into TB_MESSAGE_PERSON(
+			ID,	
+			FROMUSERID,	
+			FROMUSERNAME,	
+			TOUSERID,
+			CONTENT,
+			CREATEDATE	
+		) values (
+			#{ID},	
+			#{FROMUSERID},	
+			#{FROMUSERNAME},	
+			#{TOUSERID},	
+			#{CONTENT},		
+			#{CREATEDATE}
+		)
+	</insert>
+	<!-- 将个人发送的信息存到数据库中 -->
+	<insert id="sendMessageGroup" parameterType="pd">
+		insert into TB_MESSAGE_GROUP(
+			ID,	
+			USERID,	
+			USERNAME,	
+			GROUPID,
+			CONTENT,
+			CREATEDATE	
+		) values (
+			#{ID},	
+			#{USERID},	
+			#{USERNAME},	
+			#{GROUPID},	
+			#{CONTENT},		
+			#{CREATEDATE}
+		)
+	</insert>
+	<!-- saveSummary -->
+	<insert id="saveSummary" parameterType="pd">
+		insert into TB_SUMMARY(
+			ID,	
+			TITLE,	
+			PICURL,
+			CONTENT,	
+			TYPE,
+			CREATER,
+			CREATEDATE	
+		) values (
+			#{ID},	
+			#{TITLE},
+			#{PICURL},	
+			#{CONTENT},	
+			#{TYPE},	
+			#{CREATER},		
+			#{CREATEDATE}
+		)
+	</insert>
+	<!-- 添加爱心捐助信息 -->
+	<insert id="saveAixinHelp" parameterType="pd">
+		insert into TB_AIXIN_HELP(
+			ID,	
+			TITLE,	
+			PICURL,
+			CONTENT,	
+			HELPURL,
+			CREATER,
+			CREATEDATE	
+		) values (
+			#{ID},	
+			#{TITLE},
+			#{PICURL},	
+			#{CONTENT},	
+			#{HELPURL},	
+			#{CREATER},		
+			#{CREATEDATE}
+		)
+	</insert>
+	<!-- 根据ID查询联系我们的详情 -->
+	<!-- 更新认证表 -->
+	<update id="updateStudentBak" parameterType="pd">
+		update  TB_STUDENTBAK
+			set 
+				USERID = #{USERID},
+				LINKNBR = #{LINKNBR},
+				WORKUNIT = #{WORKUNIT},
+				DIQU = #{DIQU},
+				DUTY = #{DUTY},
+				HANGYE=#{HANGYE},
+				TEACHER=#{TEACHER},
+				ENDDATE=#{ENDDATE},
+				STATE=#{STATE}
+			where 
+				BIANHAO = #{BIANHAO}
+	</update>
+	
+	<!--  根据编号逻辑删除校友认证信息数据-->
+	<update id="delStuBakInfo" parameterType="pd">
+		update  TB_STUDENTBAK
+			set 
+				STATE=#{STATE}
+			where 
+				BIANHAO = #{BIANHAO}
+	</update>
+	
+	<!--  根据userId物理删除校友认证信息数据-->
+	<delete id="delStuBakInfoByUId" parameterType="pd">
+	    delete from TB_STUDENTBAK
+		    where USERID=#{BJJDUSERINFO_ID} and STATE='3'
+	</delete>
+	
+	<!-- 通过userId更新备份表 -->
+	<update id="editBakInfoByUserId" parameterType="pd">
+		update  TB_STUDENTBAK
+			set 
+			   <if test="LINKNBR != null and LINKNBR != ''">
+			      LINKNBR = #{LINKNBR},
+			   </if> 
+				<if test="WORKUNIT != null and WORKUNIT != ''">
+			      WORKUNIT = #{WORKUNIT},
+			   </if> 
+			   <if test="DIQU != null and DIQU != ''">
+			      DIQU = #{DIQU},
+			   </if> 
+			   <if test="DUTY != null and DUTY != ''">
+			     DUTY = #{DUTY},
+			   </if> 
+			   <if test="HANGYE != null and HANGYE != ''">
+			      HANGYE=#{HANGYE},
+			   </if> 
+			   <if test="ZHICHENG != null and ZHICHENG != ''">
+			      ZHICHENG=#{ZHICHENG},
+			   </if> 
+				<if test="TEACHER != null and TEACHER != ''">
+			      TEACHER=#{TEACHER},
+			   </if> 
+			   <if test="ENDDATE != null and ENDDATE != ''">
+			      ENDDATE=#{ENDDATE},
+			   </if>
+			   <if test="STUNO != null and STUNO != ''">
+			      STUNO=#{STUNO},
+			   </if>  
+			   <if test="SEX != null and SEX != ''">
+			      SEX=#{SEX},
+			   </if>
+				STATE='1'
+			where 
+				USERID = #{userId}
+	</update>
+	<!--自动更新apk开关 -->
+	<update id="updateApk" parameterType="pd">
+		update  TB_BJJDUSERINFO
+			set 
+				UPDATEAPK = #{RESULT}	
+			where 
+				BJJDUSERINFO_ID = #{USERID}
+	</update>
+	
+	<!-- 修改注册表中的状态 -->
+	<update id="editBakStateByUId" parameterType="pd">
+		update  TB_STUDENTBAK
+			set 
+				STATE = #{state}	
+			where 
+				USERID = #{BJJDUSERINFO_ID}
+	</update>
+	<!-- 根据编号修改注册表中的状态 -->
+	<update id="editBakStateByBianhao" parameterType="pd">
+		update  TB_STUDENTBAK
+			set 
+				STATE = #{state}	
+			where 
+				BIANHAO = #{BIANHAO}
+	</update>
+	<!-- 根据编号修改注册表中的状态 -->
+	<update id="editBakStateByBianhaoNew" parameterType="pd">
+		update  TB_STUDENTBAK
+			set 
+				CLASS = #{CLASS},
+				STUNO = #{STUNO},
+				ENDDATE= #{ENDDATE},
+				TEACHER= #{TEACHER},
+				MAINTEACHER= #{MAINTEACHER},
+				RENKETEACHER= #{RENKETEACHER}	
+			where 
+				BIANHAO = #{BIANHAO}
+	</update>
+	
+	
+	
+	<!-- 修改注册表中的状态 -->
+	<update id="editStateById" parameterType="pd">
+		update  TB_BJJDUSERINFO
+			set 
+				STATE = #{state}
+			where 
+				BJJDUSERINFO_ID = #{BJJDUSERINFO_ID}
+	</update>
+	<!-- 修改注册表中的状态 注册成功的不去修改 -->
+	<update id="editStateByIdNew" parameterType="pd">
+		update  TB_BJJDUSERINFO
+			set 
+				STATE = #{state}
+			where 
+				BJJDUSERINFO_ID = #{BJJDUSERINFO_ID} and STATE!='1'
+	</update>
+	<!--学历信息通过时 修改注册表中的学历信息-->
+	<update id="editStateByIdNew1" parameterType="pd">
+		update  TB_BJJDUSERINFO
+			set 
+			    XUELI = #{XUELI},
+			    ZHAUNGYE = #{ZHUANYE},
+			    NIANJIE = #{STARTDATE},
+			    ENDDATE = #{ENDDATE},
+			    BIANHAO = #{BIANHAO},
+				STATE = #{STATE}
+			where 
+				BJJDUSERINFO_ID = #{BJJDUSERINFO_ID}
+	</update>
+	
+	<!-- 修改注册表中的状态 只修改未注册成功的状态 注册成功的不予修改 -->
+	<update id="updateStateById" parameterType="pd">
+		update  TB_BJJDUSERINFO
+			set 
+				STATE = #{state}
+			where 
+				BJJDUSERINFO_ID = #{userId} and state!='1'
+	</update>
+	
+	<!-- 加好友 申请情况列表-->
+	<insert id="jiahaoyou" parameterType="pd">
+		insert into TB_MESSAGE(
+			ID,	
+			FROMUSERID,	
+			TOUSERID,
+			FROMUSERNAME,
+			FROMUSERPIC,
+			TOUSERNAME,
+			TOUSERPIC,
+			STATE,
+			TYPE,
+			CREATEDATE	
+		) values (
+			#{ID},	
+			#{FROMUSERID},	
+			#{TOUSERID},
+			#{FROMUSERNAME},
+			#{FROMUSERPIC},
+			#{TOUSERNAME},
+			#{TOUSERPIC},
+			#{STATE},
+			#{TYPE},	
+			#{CREATEDATE}
+		)
+	</insert>
+	<!-- 添加用户投诉消息 -->
+	<insert id="complainMeggest" parameterType="pd">
+		insert into TB_MESSAGE(
+			ID,	
+			FROMUSERID,	
+			STATE,
+			TYPE,
+			CONTENT,
+			CREATEDATE	
+		) values (
+			#{ID},	
+			#{FROMUSERID},	
+			#{STATE},
+			#{TYPE},	
+			#{CONTENT},
+			#{CREATEDATE}
+		)
+	</insert>
+	
+	<!-- 防止用户重复提交群公告(如果有正在审核的就不允许再发布了) -->
+	<select id="findGroupNoticeByState"  parameterType="pd" resultType="pd">
+	  select ID,
+	         GROUPID,
+	         USERID,
+	         TITLE,
+	         NOTICE,
+	         CREATEDATE
+	       from TB_GROUP_NOTICE
+	      where GROUPID=#{groupId}	
+	           and USERID =#{userId}
+	           and state ='0'	 					
+	</select>
+	
+	<!--发布群消息接口 -->
+	<insert id="groupNotice" parameterType="pd">
+	insert into TB_GROUP_NOTICE(
+			ID,	
+			USERID,
+			USERNAME,
+			GROUPID,
+			TITLE,
+			NOTICE,
+			CREATEDATE	
+		) values (
+			#{ID},	
+			#{USERID},	
+			#{USERNAME},
+			#{GROUPID},
+			#{TITLE},	
+			#{NOTICE},
+			#{CREATEDATE}
+		)
+	</insert>
+	<!-- 根据id查询群公告详情 -->
+	<select id="getQunNoticeDetails" parameterType="pd" resultType="pd">
+		SELECT
+	        ID,	
+			USERID,
+			USERNAME,
+			GROUPID,
+			TITLE,
+			NOTICE,
+			CREATEDATE	
+				FROM
+					tb_group_notice
+				WHERE
+					ID=#{groupNoticeId}
+	</select>
+	<!-- 根据群公告Id查询关注人信息  注意状态 state=1-->
+	<select id="groupNoticeConcentList" parameterType="pd" resultType="pd">
+		SELECT
+	        ID,	
+			USERID,
+			USERNAME,
+			GROUPNOTICEID,
+			CREATEDATE	
+				FROM
+					tb_group_notice_concent
+				WHERE
+					GROUPNOTICEID=#{groupNoticeId} and state='1'
+	</select>
+	<!-- 取得最新的群公告接口 -->
+	<select id="getNewgroupNotice" parameterType="pd" resultType="pd">
+	   SELECT
+			a.ID,
+			a.USERID,
+			a.USERNAME,
+			a.GROUPID,
+		   (SELECT COUNT(1) FROM tb_group_notice_concent b WHERE b.groupNoticeId=a.ID) AS NUMB,
+			a.TITLE,
+			a.NOTICE,
+			a.CREATEDATE
+		FROM
+			tb_group_notice a
+				WHERE
+					createDate = (
+						SELECT
+							max(createDate)
+						FROM
+							tb_group_notice
+						WHERE
+							groupId = #{groupId}
+						AND state = '1'
+					)
+	</select>
+	<!-- 获取点赞次数 -->
+	<select id="isOrNotGuanzhu" parameterType="pd" resultType="int">
+		select 
+			count(1)	
+		from 
+			TB_GROUP_NOTICE_CONCENT
+		where 
+			USERID = #{userId}  and groupNoticeId = #{groupNoticeId} and STATE = '1'
+	</select>
+	
+	<!-- 根据userId查询备份表中还在审核中的数据条数  -->
+	<select id="isChecking" parameterType="String" resultType="int">
+		select 
+			count(1)	
+		from 
+			TB_STUDENTBAK
+		where 
+			USERID = #{BJJDUSERINFO_ID} and STATE = '2'
+	</select>
+	
+	<!-- 分页获取群公告 -->
+	<!-- (SELECT COUNT(1) FROM TB_GROUP_NOTICE_CONCENT b WHERE b.groupNoticeId=a.ID and a.userId=b.userId and b.state='1') AS isOrNotGuanzhu, -->
+	<select id="getQunNoticeByPage" parameterType="pd" resultType="pd">
+		SELECT
+			a.ID,
+			a.USERID,
+			a.USERNAME,
+			a.GROUPID,
+		    (SELECT COUNT(1) FROM TB_GROUP_NOTICE_CONCENT b WHERE b.groupNoticeId=a.ID and b.state='1') AS NUMB,
+			a.TITLE,
+			a.NOTICE,
+			a.CREATEDATE
+		FROM
+			tb_group_notice a
+		WHERE
+			a.state = '1'
+		      and a.GROUPID=#{groupId} 
+		           ORDER BY a.CREATEDATE DESC
+			   limit #{pageIndex},5
+	</select>
+	<!-- 根据groupId查询全部群公告 -->
+	<select id="getqunNoticeNbr" parameterType="pd" resultType="pd">
+		SELECT
+	        ID,	
+			USERID,
+			USERNAME,
+			GROUPID,
+			TITLE,
+			NOTICE,
+			CREATEDATE	
+               FROM
+	            tb_group_notice
+		where state = #{state}
+	</select>
+	
+	<!-- 根据userId查询此人关注的群公告 -->
+	
+	<select id="qunNoticeIdListByUserId" parameterType="pd" resultType="pd">
+		SELECT
+	        GROUPNOTICEID
+               FROM
+	            tb_group_notice_concent
+		where USERID = #{USERID} and state = '1'
+	</select>
+	<!-- 保存关注群消息接口 -->
+	<insert id="saveGroupNoticeConcent" parameterType="pd">
+	insert into TB_GROUP_NOTICE_CONCENT(
+			ID,	
+			USERID,
+			USERNAME,
+			GROUPNOTICEID,
+			STATE,
+			CREATEDATE
+		) values (
+			#{ID},	
+			#{USERID},	
+			#{USERNAME},
+			#{GROUPNOTICEID},
+			#{STATE},	
+			#{CREATEDATE}
+		)
+	</insert>
+	<!-- 根据userId 和 groupNoticeId查询关注群公告情况-->
+	<select id="findGroupNoticeConcent" parameterType="pd" resultType="pd">
+		select
+			ID,	
+			USERID,
+			GROUPNOTICEID,
+			STATE,
+			CREATEDATE	
+		  from TB_GROUP_NOTICE_CONCENT
+		    where USERID=#{userId} and GROUPNOTICEID = #{groupNoticeId}
+	</select>
+	<!-- 根据Id更新群公告关注状态  -->
+	<update id="updateGroupNoticeConcentState" parameterType="pd">
+	   update TB_GROUP_NOTICE_CONCENT
+	       set STATE = #{state}
+	          where ID = #{id}
+	</update>
+	
+	<!-- 根据ID更新 群公告审核状态-->
+	<update id="qunNoticeIsOrNotTg" parameterType="pd">
+	   update TB_GROUP_NOTICE
+	       set STATE = #{state}
+	          where ID = #{ID}
+	</update>
+	
+	<!-- 根据Id更新群消息状态 -->
+	<update id="qunMessageIsOrNotTg" parameterType="pd">
+	   update TB_MESSAGE_GROUP
+	       set STATE = #{state}
+	          where ID = #{ID}
+	</update>
+	
+	<!-- 取得投诉列表的数据 已处理和阅读过的 -->
+	<select id="getComplainMeg" parameterType="pd" resultType="pd">
+		select
+			ID,	
+			USERID,	
+			COMPLAIN,
+			TYPE,
+			STATE,
+			RESULT,
+			CREATEDATE	
+		  from TB_COMPLAIN
+		    where USERID=#{userId} and state!='0'
+	</select>
+	
+	<!-- 取得投诉列表的数据 已处理和阅读过的 -->
+	<select id="getSuggestMeg" parameterType="pd" resultType="pd">
+		select
+			ID,	
+			USERID,	
+			CONTENT,
+			TYPE,
+			STATE,
+			RESULT,
+			CREATEDATE	
+		  from TB_SUGGEST
+		    where USERID=#{userId} and state!='0'
+	</select>
+	
+	<!-- 取得发布消息列表的数据 已处理和阅读过的 -->
+	<select id="getReleaseMeg" parameterType="pd" resultType="pd">
+		select
+			RELEASE_ID,	
+			CREATEUSER,	
+			TITLE,
+			TYPEE,
+			STATE,
+			CONTENT,
+			CREATEDATE	
+		  from TB_RELEASE
+		    where CREATEUSER=#{userId} and state!='0'
+	</select>
+	
+	
+	
+	<!-- 根据id查询已处理投诉信息 -->
+	<select id="getComplainInfoById" parameterType="pd" resultType="pd">
+		select
+			ID,	
+			USERID,	
+			COMPLAIN,
+			TYPE,
+			STATE,
+			RESULT,
+			CREATEDATE	
+		  from TB_COMPLAIN
+		    where ID=#{ID}
+	</select>
+	<!-- 根据id查询已处理意见反馈信息 -->
+	<select id="getSuggestInfoById" parameterType="pd" resultType="pd">
+		select
+			ID,	
+			USERID,	
+			CONTENT,
+			TYPE,
+			STATE,
+			RESULT,
+			CREATEDATE	
+		  from TB_SUGGEST
+		    where ID=#{ID}
+	</select>
+	
+	<!-- 根据userId查询接收到的好友申请   取得和userId有关的所有信息  查询的是全量-->
+	<select id="getFriendSqInfo" parameterType="pd" resultType="pd">
+		select 
+			ID,	
+			FROMUSERID,		
+			TOUSERID,
+			STATE,
+			CREATEDATE
+		from 
+			TB_MESSAGE
+		where 
+			TOUSERID = #{userId} or FROMUSERID = #{userId}
+			   ORDER BY CREATEDATE desc
+	</select>
+	
+	<!-- 根据userId查询接收到的好友申请   取得加userId为好友的新消息-->
+	<select id="getFriendSqInfo0" parameterType="pd" resultType="pd">
+		select 
+			ID,	
+			FROMUSERID,		
+			TOUSERID,
+			STATE,
+			CREATEDATE
+		from 
+			TB_MESSAGE
+		where 
+			TOUSERID = #{userId} and state= #{state}
+			   ORDER BY CREATEDATE desc
+	</select>
+	<!-- 取得好友信息表 -->
+	<select id="getFriendAllInfo" parameterType="pd" resultType="pd">
+		select 
+			ID,	
+			FROMUSERID,		
+			TOUSERID,
+			TOUSERNAME,
+			FRIENDLINKNBR,
+			TOUSERPIC
+		from 
+			TB_FRIENDLIST
+		where 
+			FROMUSERID = #{userId}
+	</select>
+	<!-- 根据userId查询添加成功的好友信息  我看可以看别人的-->
+	<select id="getFriendOkInfo" parameterType="pd" resultType="pd">
+		select 
+			ID,	
+			FROMUSERID,		
+			TOUSERID,
+			TOUSERNAME,
+			FRIENDLINKNBR,
+			TOUSERPIC
+		from 
+			TB_FRIENDLIST
+		where 
+			FROMUSERID = #{userId} and isOrnotSeeOther='0'
+	</select>
+	<!-- 根据userId查询添加成功的好友信息  别人不让我看的-->
+	<select id="getFriendNotSeeMyInfo" parameterType="pd" resultType="pd">
+		select 
+			ID,	
+			FROMUSERID,		
+			TOUSERID,
+			TOUSERNAME,
+			FRIENDLINKNBR,
+			TOUSERPIC
+		from 
+			TB_FRIENDLIST
+		where 
+		    TOUSERID = #{userId} and isOrnotSeeMy='1'
+	</select>
+	
+	<!-- 取得apk版本号 -->
+	<select id="getApkVersion" parameterType="pd" resultType="pd">
+		select 
+			ID,	
+			VERSION,		
+			PATH,
+			STATE,
+			SHUOMING,
+			CREATEDATE
+		from 
+			TB_APKVERSION
+		where 
+		    STATE = #{state}
+	</select>
+	<!-- 取得消息表中的新消息 -->
+	<select id="getNewMeG" parameterType="pd" resultType="pd">
+		select 
+			ID,	
+			FROMUSERID,		
+			TOUSERID,
+			TOUSERNAME,
+			TOUSERPIC
+		from 
+			TB_MESSAGE
+		where 
+		    TOUSERID = #{userId} and state='0'
+	</select>
+	
+	<!-- 取得发送给用户的消息 -->
+	<select id="getMessagePerson" parameterType="pd" resultType="pd">
+		select 
+			ID,	
+			FROMUSERID,	
+			FROMUSERNAME,	
+			TOUSERID,
+			CONTENT,
+			INDEXS,
+			CREATEDATE
+		from 
+			TB_MESSAGE_PERSON
+		where 
+		    TOUSERID = #{USERID} 
+		    <if test="INDEX != null and INDEX != ''">
+			    and INDEXS>#{INDEX}
+			</if> 
+	</select>
+	
+	<!-- 取得发送给用户的消息 (新版)-->
+	<select id="getMessagePersonNew" parameterType="pd" resultType="pd">
+		SELECT
+	        ID,	
+			FROMUSERID,	
+			FROMUSERNAME,	
+			TOUSERID,
+			CONTENT,
+			INDEXS,
+			CREATEDATE
+		FROM
+			TB_MESSAGE_PERSON
+		WHERE
+			indexs IN (
+				SELECT
+					MAX(indexs)
+				FROM
+					tb_message_person
+				WHERE
+					TOUSERID =  #{USERID}
+					  and state='0'
+				GROUP BY
+					fromUserId
+			)
+		ORDER BY
+			indexs DESC 
+	</select>
+	<!-- 更新好友发给自己消息的读取状态   FROMUSERID 其实是 toUserId -->
+	<update id="updateMessageFriendState" parameterType="pd">
+		update  TB_MESSAGE_PERSON
+			set 
+				STATE = '1'
+			where 
+				FROMUSERID = #{FROMUSERID}
+				   and TOUSERID = #{TOUSERID} and STATE = '0'
+	</update>
+	
+	<!-- 根据消息Id和fromUserId确保删除的是自己发送的消息 -->
+	<update id="delFriendMessageInfo" parameterType="pd">
+		update  TB_MESSAGE_PERSON
+			set 
+				STATE = '2'
+			where 
+				FROMUSERID = #{FROMUSERID}
+				   and ID = #{MESSAGEID}
+	</update>
+	
+	<!-- 根据消息Id和fromUserId确保删除的是自己发送的群消息 -->
+	<update id="delGroupMessageInfo" parameterType="pd">
+		update  TB_MESSAGE_GROUP
+			set 
+				DELSTATE = '1'
+			where 
+				USERID = #{USERID}
+				   and ID = #{MESSAGEID}
+	</update>
+	
+	<!--取得所有群消息  -->
+	<select id="getGroupIdAllMessage" parameterType="pd" resultType="pd">
+		select 
+			ID,	
+			USERID,	
+			USERNAME,
+			INDEXS,	
+			GROUPID,
+			CONTENT,
+			CREATEDATE	
+		from 
+			TB_MESSAGE_GROUP
+		where 
+		    GROUPID = #{GROUPID} 
+		      and DELSTATE ='0'
+		       and STATE = '1'
+		    <if test="INDEX != null and INDEX != ''">
+			    and INDEXS>#{INDEX}
+			</if> 
+	</select>
+	
+	<!-- 取得群消息的接口 -->
+	<select id="getGroupIdsMessage" parameterType="java.util.Map" resultType="pd">
+		select 
+			ID,	
+			USERID,	
+			USERNAME,	
+			GROUPID,
+			INDEXS,
+			CONTENT,
+			CREATEDATE	
+		from 
+			TB_MESSAGE_GROUP
+		where 
+		    GROUPID IN 
+		 <foreach collection="list" item="item" index="index"  open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+		      and DELSTATE ='0'
+		       and STATE = '1'
+			    and INDEXS>#{INDEXS}
+			
+	</select>
+	
+	
+	<!-- 取得好友之间的最新对话 -->
+	<select id="getMessageFriend" parameterType="pd" resultType="pd">
+		select 
+			ID,	
+			FROMUSERID,	
+			FROMUSERNAME,	
+			TOUSERID,
+			CONTENT,
+			INDEXS,
+			STATE,
+			CREATEDATE
+		from 
+			TB_MESSAGE_PERSON
+		where 
+		    TOUSERID = #{TOUSERID} 
+		       and FROMUSERID = #{FROMUSERID}
+		         and STATE !='2'
+		    <if test="INDEX != null and INDEX != ''">
+			    and INDEXS>#{INDEX}
+			</if> 
+	</select>
+	<!-- 根据ID查询个人发送信息详情 -->
+	<select id="messagePersonInfo" parameterType="pd" resultType="pd">
+		select 
+			ID,	
+			INDEXS,
+			CREATEDATE
+		from 
+			TB_MESSAGE_PERSON
+		where 
+		    ID = #{id}
+	</select>
+	
+	<!-- 取得投诉表中的新消息 -->
+	<select id="getNewComplain" parameterType="pd" resultType="pd">
+		select 
+			ID,	
+			USERID,
+			STATE
+		from 
+			TB_COMPLAIN
+		where 
+		    USERID = #{userId} and state='1'
+	</select>
+
+	<!-- 根据userId查询意见建议表中是否有新消息 -->
+	<select id="getNewSuggest" parameterType="pd" resultType="pd">
+		select 
+			ID,	
+			USERID,
+			STATE
+		from 
+			TB_SUGGEST
+		where 
+		    USERID = #{userId} and state='1'
+	</select>
+	<!-- 根据userId查询发布信息表中是否有新消息 -->
+	<select id="getNewRelease" parameterType="pd" resultType="pd">
+		select 
+			RELEASE_ID,	
+			CREATEUSER,
+			STATE
+		from 
+			TB_RELEASE
+		where 
+		    CREATEUSER = #{userId} and state='1'
+	</select>
+	<!-- 根据RELEASE_ID查询发布信息 -->
+	<select id="getReleaseInfoById" parameterType="pd" resultType="pd">
+		select
+			RELEASE_ID,	
+			CREATEUSER,	
+			TITLE,
+			TYPEE,
+			STATE,
+			CONTENT,
+			CREATEDATE	
+		      from TB_RELEASE
+		where 
+		    RELEASE_ID = #{RELEASE_ID}
+	</select>
+	
+	<!-- 查看我不让别人看的信息 -->
+	<select id="getFriendNotSeeMyList" parameterType="pd" resultType="pd">
+		select 
+			ID,	
+			FROMUSERID,		
+			TOUSERID,
+			TOUSERNAME,
+			TOUSERPIC
+		from 
+			TB_FRIENDLIST
+		where 
+		    FROMUSERID = #{userId} and isOrnotSeeMy='1'
+	</select>
+	<!-- 查看我不看别人看信息 -->
+	<select id="getFriendNotSeeOtherInfo" parameterType="pd" resultType="pd">
+		select 
+			ID,	
+			FROMUSERID,		
+			TOUSERID,
+			TOUSERNAME,
+			TOUSERPIC
+		from 
+			TB_FRIENDLIST
+		where 
+		    FROMUSERID = #{userId} and isOrnotSeeOther='1'
+	</select>
+	
+	<!-- 根据linkNbr查询用户信息 -->
+	<select id="findUserInfoByLinkNbr" parameterType="pd" resultType="pd">
+		select 
+		  BJJDUSERINFO_ID
+		from 
+			TB_BJJDUSERINFO
+		where 
+			LINKNBR = #{LINKNBR} 
+	</select>
+	<!-- 根据userId查询姓名-->
+	<select id="getUserNmae" parameterType="pd" resultType="pd">
+		select 
+		USERNAME
+		from 
+			TB_BJJDUSERINFO
+		where 
+			BJJDUSERINFO_ID = #{BJJDUSERINFO_ID} 
+	</select>
+	
+	<!-- 根据编号群组成员表里的更新userId和state -->
+	<update id="updateGroupMember" parameterType="pd">
+		update  TB_GROUP_MEMBER
+			set USERID = #{USERID},
+				STATE = '1'
+			where 
+				BIANHAO = #{BIANHAO}
+	</update>
+	
+	<!--将现在的照片更新到群成员列表 -->
+	<update id="updateGroupNowPic" parameterType="pd">
+		update  TB_GROUP_MEMBER
+			   set PICURL = #{NOWPICURL}
+			where 
+				USERID = #{userId}
+	</update>
+	<!-- 将现在的照片更新到好友列表中 -->
+	<update id="updateFriendNowPic" parameterType="pd">
+		update  TB_FRIENDLIST
+			   set TOUSERPIC = #{NOWPICURL}
+			where 
+				TOUSERID = #{userId}
+	</update>
+	<!--  -->
+	<update id="updateMessageNowPic" parameterType="pd">
+		update  TB_MESSAGE
+			   set TOUSERPIC = #{NOWPICURL}
+			where 
+				TOUSERID = #{userId}
+	</update>
+	
+	<update id="updateMessageNowPic1" parameterType="pd">
+		update  TB_MESSAGE
+			   set FROMUSERPIC = #{NOWPICURL}
+			where 
+				FROMUSERID = #{userId}
+	</update>
+	<!--将现在的照片更新到群成员列表 -->
+	<update id="updateUserState" parameterType="pd">
+		update  TB_BJJDUSERINFO
+			   set STATE = '2'
+			where 
+				BJJDUSERINFO_ID = #{userId}
+	</update>
+	<!-- 更新群信息的照片 -->
+	<update id="delGroupTp" parameterType="pd">
+		update  TB_GROUP
+			   set PICURL = ''
+			where 
+				ID = #{ID}
+	</update>
+	
+	<!-- 根据userId查询添加成功的好友信息  好友允许看照片的信息 -->
+	<select id="getFriendOkInfoSee" parameterType="pd" resultType="pd">
+		select 
+			ID,	
+			FROMUSERID,		
+			TOUSERID,
+			TOUSERNAME,
+			TOUSERPIC
+		from 
+			TB_FRIENDLIST
+		where 
+			FROMUSERID = #{userId} and ISAGREENSEEMYPIC='0'
+	</select>
+	
+	<!-- 根据申请操作更新申请状态 -->
+	<update id="isOrnotAgreenFriend" parameterType="pd">
+		update  TB_MESSAGE
+			set FROMUSERID = #{FROMUSERID},
+			    TOUSERID = #{TOUSERID},
+			    LASTMODDATE= #{LASTMODDATE},
+				STATE = #{STATE}
+			where 
+				ID = #{ID}
+	</update>
+	
+	<!--查询之前是否添加此好友  -->
+	<select id="isExsitJiaFri" parameterType="pd" resultType="pd">
+		select 
+			ID,	
+			FROMUSERID,		
+			TOUSERID,
+			CREATEDATE
+		from 
+			TB_FRIENDLIST
+		where 
+			FROMUSERID = #{fromUserId} and TOUSERID = #{toUserId}
+	</select>
+	<!-- 查询是否已经进行了好友申请 -->
+	<select id="isExsitSq" parameterType="pd" resultType="pd">
+		select 
+			ID,	
+			FROMUSERID,		
+			TOUSERID,
+			CREATEDATE
+		from 
+			TB_MESSAGE
+		where 
+			FROMUSERID = #{fromUserId} and TOUSERID = #{toUserId} and state='0'
+	</select>
+	
+	
+	
+	<!-- 将数据存到好友列表中 -->
+	<insert id="saveFriendList" parameterType="pd">
+		insert into TB_FRIENDLIST(
+			ID,	
+			FROMUSERID,	
+			TOUSERID,
+			TOUSERNAME,
+			TOUSERPIC,
+			FRIENDLINKNBR,
+			STATE,
+			CREATEDATE	
+		) values (
+			#{ID},	
+			#{FROMUSERID},	
+			#{TOUSERID},
+			#{TOUSERNAME},
+			#{TOUSERPIC},
+			#{FRIENDLINKNBR},
+			#{STATE},	
+			#{CREATEDATE}
+		)
+	</insert>
+	<!-- 填写反馈意见 -->
+	<insert id="getSuggest" parameterType="pd">
+		insert into TB_SUGGEST(
+			ID,	
+			USERID,	
+			CONTENT,
+			TYPE,
+			STATE,
+			CREATEDATE	
+		) values (
+			#{ID},	
+			#{USERID},	
+			#{CONTENT},
+			#{TYPE},
+			#{STATE},	
+			#{CREATEDATE}
+		)
+	</insert>
+	
+	<!-- 投诉 -->
+	<insert id="getComplain" parameterType="pd">
+		insert into TB_COMPLAIN(
+			ID,	
+			USERID,	
+			COMPLAIN,
+			TYPE,
+			STATE,
+			CREATEDATE	
+		) values (
+			#{ID},	
+			#{USERID},	
+			#{COMPLAIN},
+			#{TYPE},
+			#{STATE},	
+			#{CREATEDATE}
+		)
+	</insert>
+	<!-- 更新投诉表中的处理结果及状态 -->
+	<update id="complainEdit" parameterType="pd">
+		update  TB_COMPLAIN
+			set 
+				STATE = '1',
+				RESULT=#{RESULT}
+			where 
+				ID = #{ID}
+	</update>
+	<!-- 更新意见反馈表中的处理结果及状态 -->
+	<update id="suggestEdit" parameterType="pd">
+		update  TB_SUGGEST
+			set 
+				STATE = '1',
+				RESULT=#{RESULT}
+			where 
+				ID = #{ID}
+	</update>
+	<!-- 更新群组消息 -->
+	<update id="groupEdit" parameterType="pd">
+		update  TB_GROUP
+			set 
+				STATE = '1',
+				PICURL=#{PICURL},
+				TYPE=#{TYPE},
+				GROUPNAME=#{GROUPNAME}
+			where 
+				ID = #{ID}
+	</update>
+	
+	<!--编辑学生认证信息 -->
+	<update id="editStudentInfo" parameterType="pd">
+		update  TB_STUDENTBAK
+			set 
+				USERNAME =#{USERNAME},
+				SEX=#{SEX},
+				BRITHDAY=#{BRITHDAY},
+				STUNO=#{STUNO},
+				XUELI=#{XUELI},
+				STARTDATE=#{STARTDATE},
+				ENDDATE=#{ENDDATE},
+				ZHUANYE=#{ZHUANYE}
+			where 
+				BIANHAO = #{BIANHAO}
+	</update>
+	<!-- 更新投诉数据的状态 -->
+	<update id="updateComplainState" parameterType="pd">
+		update  TB_COMPLAIN
+			set 
+				STATE = #{STATE}
+			where 
+				ID = #{ID}
+	</update>
+	
+	<!-- 更新发布消息的状态 -->
+	<update id="updateReleaseState" parameterType="pd">
+		update  TB_RELEASE
+			set 
+				STATE = #{STATE}
+			where 
+				RELEASE_ID = #{ID}
+	</update>
+	<!-- 更新意见建议数据的状态 -->
+	<update id="updateSuggestState" parameterType="pd">
+		update  TB_SUGGEST
+			set 
+				STATE = #{STATE}
+			where 
+				ID = #{ID}
+	</update>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from TB_BJJDUSERINFO
+		where 
+			BJJDUSERINFO_ID = #{BJJDUSERINFO_ID}
+	</delete>
+	<!-- 删除上传图片记录-->
+	<delete id="deleteUpload" parameterType="pd">
+		delete from TB_UPLOADPIC
+		where 
+			ID = #{ID}
+	</delete>
+	<!-- 删除好友列表中的信息 -->
+	<delete id="deleteFriendInfo" parameterType="pd">
+		delete from TB_FRIENDLIST
+		where 
+			FROMUSERID = #{FROMUSERID} and TOUSERID=#{TOUSERID}
+	</delete>
+	
+	<!-- 删除消息表中的信息 -->
+	<delete id="deleteMessageInfo" parameterType="pd">
+		delete from TB_MESSAGE
+		where 
+			FROMUSERID = #{FROMUSERID} and TOUSERID=#{TOUSERID} and TYPE=#{TYPE}
+	</delete>
+	
+	<!-- 删除好友聊天列表中的数据 -->
+	<delete id="deleteChatInfo" parameterType="pd">
+		delete from TB_MESSAGE_PERSON
+		where 
+			FROMUSERID = #{FROMUSERID} and TOUSERID=#{TOUSERID}
+	</delete>
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  TB_BJJDUSERINFO
+			set 
+				USERNAME = #{USERNAME},
+				ACCOUNT = #{ACCOUNT},
+				XUEYUAN = #{XUEYUAN},
+				ZHAUNGYE = #{ZHAUNGYE},
+				NIANJIE = #{NIANJIE},
+				SEX = #{SEX},
+				LINKNBR = #{LINKNBR},
+				EMAIL = #{EMAIL},
+				POSTID = #{POSTID},
+				XUELI = #{XUELI},
+				FROMUSERID = #{FROMUSERID},
+
+			BJJDUSERINFO_ID = BJJDUSERINFO_ID
+			where 
+				BJJDUSERINFO_ID = #{BJJDUSERINFO_ID}
+	</update>
+	
+	<!-- 更新 学院简介等内容-->
+	<update id="editSummary" parameterType="pd">
+		update  TB_SUMMARY
+			set 
+				TITLE = #{TITLE},
+				PICURL= #{PICURL},
+				CONTENT = #{CONTENT},
+				CREATER = #{CREATER}
+			where 
+				ID = #{ID}
+	</update>
+	<!-- 更新联系院校内容 -->
+	<update id="editCollege" parameterType="pd">
+		update  TB_SUMMARY
+			set 
+				TITLE = #{TITLE},
+				PICURL= #{PICURL},
+				SHEQULINKNBR=#{SHEQULINKNBR},
+		        SHEQUEMAIL=#{SHEQUEMAIL},
+		        SHEQUADDRESS=#{SHEQUADDRESS},
+		        ZHURENPERSON=#{ZHURENPERSON},
+		        ZHURENLINKNBR=#{ZHURENLINKNBR},
+		        ZHURENEMAIL=#{ZHURENEMAIL},
+		        WORKER1NAME=#{WORKER1NAME},
+		        WORKER1LINKNBR=#{WORKER1LINKNBR},
+		        WORKER1EMAIL=#{WORKER1EMAIL},
+		        WORKER2NAME=#{WORKER2NAME},
+		        WORKER2LINKNBR=#{WORKER2LINKNBR},
+		        WORKER2EMAIL=#{WORKER2EMAIL},
+				CREATER = #{CREATER}
+			where 
+				ID = #{ID}
+	</update>
+	
+	<!-- 根据ID修改爱心捐助的信息 -->
+	<update id="editAixinHelp" parameterType="pd">
+		update  TB_AIXIN_HELP
+			set 
+				TITLE = #{TITLE},
+				PICURL= #{PICURL},
+				CONTENT =#{CONTENT},
+				STATE =#{STATE},
+				HELPURL =#{HELPURL},
+				CREATER = #{CREATER}
+			where 
+				ID = #{ID}
+	</update>
+	
+	<!-- 修改 -->
+	<update id="editByUserId" parameterType="pd">
+		update  TB_BJJDUSERINFO
+			set 
+				USERNAME = #{USERNAME},
+				LINKNBR =#{LINKNBR},
+				SEX = #{SEX},
+				XUELI = #{XUELI},
+				ZHAUNGYE = #{ZHAUNGYE},
+				NIANJIE = #{NIANJIE},
+				ENDDATE = #{ENDDATE},
+				POSTID = #{POSTID},
+				EMAIL = #{EMAIL},
+				ADDRESS = #{ADDRESS},
+				WORKUNIT = #{WORKUNIT},
+				ZHICHENG = #{ZHICHENG},
+				DIQU = #{DIQU},
+				DUTY = #{DUTY},
+				ISCHUJI = #{ISCHUJI},
+				HANGYE = #{HANGYE},
+				UNITNBRS = #{UNITNBRS},
+				CLASSROOM = #{CLASSROOM},
+				STUNO = #{STUNO},
+	            DAOSHI = #{DAOSHI},
+				RENKETEACHER= #{RENKETEACHER},
+				MAINTEACHER= #{MAINTEACHER},
+                LASTMODDATE =#{LASTMODDATE},
+			BJJDUSERINFO_ID = BJJDUSERINFO_ID
+			where 
+				BJJDUSERINFO_ID = #{userId}
+	</update>
+	
+	<!-- 更新注册表信息 -->
+	<update id="updateZhuceInfo" parameterType="pd">
+		update  TB_BJJDUSERINFO
+			set 
+				ZHAUNGYE = #{ZHUANYE},
+				NIANJIE = #{NIANJIE},
+				ENDDATE = #{ENDDATE},
+				XUELI = #{XUELI},
+				<if test="RUXUEPICURL != null and RUXUEPICURL != ''">
+			      RUXUEPICURL = #{RUXUEPICURL},
+			   </if> 
+				BIANHAO = #{BIANHAO},
+				STATE = #{STATE}
+			where 
+				BJJDUSERINFO_ID = #{BJJDUSERINFO_ID}
+	</update>
+	<!-- 根据userId将照片存到数据库中 -->
+	<update id="uploadNowPic" parameterType="pd">
+		update  TB_BJJDUSERINFO
+			set 
+				NOWPICURL = #{nowPic}
+			where 
+				BJJDUSERINFO_ID = #{userId}
+	</update>
+	
+	<!-- 通过ID获取注册用户数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			USERNAME,	
+			ACCOUNT,	
+			PASSWORD,	
+			XUEYUAN,	
+			ZHAUNGYE,
+			ZHICHENG,	
+			NIANJIE,	
+			SEX,	
+			LINKNBR,	
+			EMAIL,	
+			POSTID,	
+			YAOQINGCODE,	
+			CREATEDATE,	
+			STATE,	
+			XUELI,	
+			 DIQU,
+             HANGYE,
+             WORKUNIT,
+             DUTY,
+			FROMUSERID,
+            RUXUEPICURL,
+            BIYEPICURL,
+            NOWPICURL,
+            ENDDATE,
+            EMAIL,
+            POSTID,
+            BIANHAO,
+            STUNO,
+            ADDRESS,
+            ISCHUJI,
+            ISOPENFRIENDYZ,
+            ISAGREENSEEMYPIC,
+            CLASSROOM,
+            UNITNBRS,
+            DAOSHI,
+            MAINTEACHER,
+            RENKETEACHER,
+            UPDATEAPK,	
+			BJJDUSERINFO_ID
+		from 
+			TB_BJJDUSERINFO
+		where 
+			BJJDUSERINFO_ID = #{BJJDUSERINFO_ID}
+	</select>
+	
+	<!--根据ID查询走进学院等的详情-->
+	<select id="findSummaryById" parameterType="pd" resultType="pd">
+		select 
+			ID,	
+			TITLE,
+			PICURL,	
+			CONTENT,	
+			TYPE,	
+			CREATER,
+			CREATEDATE
+		from 
+			TB_SUMMARY
+		where 
+			ID = #{ID}
+	</select>
+	<!-- 查询联系院校的信息 -->
+	<select id="findCollegeById" parameterType="pd" resultType="pd">
+		select 
+			ID,	
+			TITLE,
+			PICURL,	
+			SHEQULINKNBR,
+	        SHEQUEMAIL,
+	        SHEQUADDRESS,
+	        ZHURENPERSON,
+	        ZHURENLINKNBR,
+	        ZHURENEMAIL,
+	        WORKER1NAME,
+	        WORKER1LINKNBR,
+	        WORKER1EMAIL,
+	        WORKER2NAME,
+	        WORKER2LINKNBR,
+	        WORKER2EMAIL,
+			CREATER,	
+			CREATEDATE
+		from 
+			TB_SUMMARY
+		where 
+			ID = #{ID}
+	</select>
+	<!-- 根据ID查询爱心捐助的信息-->
+	<select id="findAnxinHelpById" parameterType="pd" resultType="pd">
+		select 
+			ID,	
+			TITLE,
+			CONTENT,
+			PICURL,	
+			STATE,
+			HELPURL,
+			CREATER,	
+			CREATEDATE
+		from 
+			TB_AIXIN_HELP
+		where 
+			ID = #{ID}
+	</select>
+	<!-- 根据ID删除走进学院图片的URL -->
+	<update id="delSummaryPic" parameterType="pd">
+		update  TB_SUMMARY
+			set 
+				PICURL = ''
+			where 
+				ID = #{ID}
+	</update>
+	<!--根据ID删除 爱心捐助图片的URL-->
+	<update id="delAnxinHelpPic" parameterType="pd">
+		update  TB_AIXIN_HELP
+			set 
+				PICURL = ''
+			where 
+				ID = #{ID}
+	</update>
+	<!-- 根据ID查询群组信息 -->
+	<select id="findGroupById" parameterType="pd" resultType="pd">
+	  select
+				ID,
+				GROUPNAME,	
+				GROUPID,	
+				TYPE,		
+				CREATEDATE,
+				CREATERID,	
+				PICURL						
+		from 
+				TB_GROUP
+			where ID=#{ID}
+	</select>
+	<!-- 根据ID查询投诉内容 -->
+	<select id="findComplainById" parameterType="pd" resultType="pd">
+	  select
+				ID,
+				USERID,	
+				COMPLAIN,	
+				TYPE,		
+				CREATEDATE,	
+				STATE						
+		from 
+				TB_COMPLAIN
+			where ID=#{ID}
+	</select>
+	<!-- 根据ID查询投诉内容 -->
+	<select id="findSuggestById" parameterType="pd" resultType="pd">
+	  select
+				ID,
+				USERID,	
+				CONTENT,	
+				TYPE,		
+				CREATEDATE,	
+				STATE						
+		from 
+				TB_SUGGEST
+			where ID=#{ID}
+	</select>
+	
+	<!-- 查询群组列表 -->
+	<select id="getQunzuList" parameterType="pd" resultType="pd">
+		select 
+			GROUPID,	
+			GROUPNAME,	
+			PICURL
+		from 
+			TB_GROUP
+		where state=#{state} and groupId in (select groupId from 
+		TB_GROUP_MEMBER where USERID=#{userId})
+</select>																	
+	<!-- 查询组成员 -->
+	<select id="getQunzuMemberList" parameterType="pd" resultType="pd">
+		select 
+			ID,	
+			USERID,	
+			USERNAME,
+			BIANHAO,
+			STATE,
+			PICURL
+		from 
+			TB_GROUP_MEMBER
+		where GROUPID=#{groupId}
+	</select>
+	
+	<!-- 通过邀请码获取数据 -->
+	<select id="findyaoqingCode" parameterType="pd" resultType="pd">
+		select 
+			
+			USERNAME,	
+			ACCOUNT,	
+			PASSWORD,	
+			XUEYUAN,	
+			ZHAUNGYE,	
+			NIANJIE,	
+			SEX,	
+			LINKNBR,	
+			EMAIL,	
+			POSTID,	
+			YAOQINGCODE,	
+			CREATEDATE,	
+			STATE,	
+			XUELI,	
+			FROMUSERID,		
+			BJJDUSERINFO_ID
+		from 
+			TB_BJJDUSERINFO
+		where 
+			YAOQINGCODE = #{yaoqingCode}
+	</select>
+	<!-- 根据手机号码查询是否已经注册 -->
+	<select id="findUInfoBylinkNbr" parameterType="pd" resultType="pd">
+		select 
+			USERNAME,	
+			ACCOUNT,		
+			LINKNBR,
+			CREATEDATE,	
+			BJJDUSERINFO_ID
+		from 
+			TB_BJJDUSERINFO
+		where 
+			LINKNBR = #{phoneNbr}
+	</select>
+	
+	
+	<!-- 登录验证 -->
+	<select id="login" parameterType="pd" resultType="pd">
+		select 
+			BJJDUSERINFO_ID,	
+			USERNAME,	
+			ACCOUNT,
+			LINKNBR,	
+			PASSWORD,
+			STATE	
+		from 
+			TB_BJJDUSERINFO
+		where 
+			LINKNBR = #{linkNbr} and PASSWORD=#{password}
+	</select>
+	
+	<!-- 身份认证  本专科-->
+	<select id="renzheng" parameterType="pd" resultType="pd">
+		select 
+			STUNO,	
+			USERNAME,
+			XUELI,
+			BIANHAO,
+			STATE,
+			ENDDATE	
+		from 
+			TB_STUDENTBAK
+		where 
+			ZHUANYE = #{zhuanye} and USERNAME = #{userName} 
+			and ENDDATE = #{endDate} and XUELI = #{xueli} and STATE!='2'
+	</select>
+	
+	<!-- 身份认证  硕博-->
+	<select id="renzhengShuoBo" parameterType="pd" resultType="pd">
+		select 
+			STUNO,	
+			USERNAME,
+			STARTDATE,
+			BIANHAO,
+			STATE,
+			XUELI	
+		from 
+			TB_STUDENTBAK
+		where 
+			ZHUANYE = #{zhuanye} and USERNAME=#{userName} 
+			and STARTDATE=#{startDate} and XUELI=#{xueli} and STATE!='2'
+	</select>
+	<!-- 好友验证开关 -->
+	<update id="isOpenFriendYz" parameterType="pd">
+		update  TB_BJJDUSERINFO
+			set 
+				ISOPENFRIENDYZ = #{RESULT}
+			where 
+				BJJDUSERINFO_ID = #{USERID}
+	</update>
+	<!-- isAgreenSeeMyPic -->
+	<update id="isAgreenSeeMyPic" parameterType="pd">
+		update  TB_BJJDUSERINFO
+			set 
+				ISAGREENSEEMYPIC = #{RESULT}
+			where 
+				BJJDUSERINFO_ID = #{USERID}
+	</update>
+	
+	<!-- isAgreenSeeMyPicList -->
+	<update id="isAgreenSeeMyPicList" parameterType="pd">
+		update  TB_FRIENDLIST
+			set 
+				ISAGREENSEEMYPIC = #{RESULT}
+			where 
+				TOUSERID = #{USERID}
+	</update>
+	<!-- 记录上传照片的信息 -->
+	<insert id="saveUploadPic" parameterType="pd">
+		insert into TB_UPLOADPIC(
+			ID,	
+			USERID,	
+			PICTYPE,
+			PICURL,
+			CREATEDATE	
+		) values (
+			#{ID},	
+			#{USERID},	
+			#{PICTYPE},	
+			#{PICURL},	
+			#{CREATEDATE}
+		)
+	</insert>
+	<!-- 保存群组信息 -->
+	<insert id="saveGroupInfo" parameterType="pd">
+		insert into TB_GROUP(
+			ID,	
+			GROUPID,	
+			GROUPNAME,
+			TYPE,
+			STATE,
+			CREATERID,
+			PICURL,
+			CREATEDATE	
+		) values (
+			#{ID},	
+			#{GROUPID},	
+			#{GROUPNAME},
+			#{TYPE},
+			#{STATE},
+			#{CREATERID},	
+			#{PICURL},	
+			#{CREATEDATE}
+		)
+	</insert>
+	<!-- 查询是否还有未经过审核的照片 -->
+	<select id="findUploadpicByUId" parameterType="pd" resultType="pd">
+		select 
+			ID,
+			USERID,
+			PICTYPE,
+			PICURL,
+			STATE,	
+			CREATEDATE	
+		from 
+			TB_UPLOADPIC
+		where 
+			USERID = #{userId} AND state =#{state} and PICTYPE=#{type}
+	</select>
+	
+	<!-- 根据ID查询上传照片记录 -->
+	<select id="findPicById" parameterType="pd" resultType="pd">
+		SELECT
+			ID,
+			USERID,
+			PICTYPE,
+			PICURL,
+			CREATEDATE,
+			STATE
+		FROM
+			TB_UPLOADPIC 
+		WHERE 
+		    ID = #{ID}
+	</select>
+	
+	<!-- 根据ID更新上传图片的状态 -->
+	<update id="updatePicState" parameterType="pd">
+		update  TB_UPLOADPIC
+			set 
+				STATE = #{STATE}	
+			where 
+				ID = #{ID}
+	</update>
+	
+	<!-- 根据userID更新注册表中的上传照片 URL-->
+	<update id="uploadPicUserInfo" parameterType="pd">
+		update  TB_BJJDUSERINFO
+			set 
+			   <if test="RUXUEPICURL != null and RUXUEPICURL != ''">
+			      RUXUEPICURL = #{RUXUEPICURL},
+			   </if> 
+				<if test="BIYEPICURL != null and BIYEPICURL != ''">
+			      BIYEPICURL = #{BIYEPICURL},
+			   </if> 
+			   <if test="NOWPICURL != null and NOWPICURL != ''">
+			      NOWPICURL = #{NOWPICURL},
+			   </if> 
+				STATE='1'
+			where 
+				BJJDUSERINFO_ID = #{userId}
+	</update>
+	
+	
+	<!-- 根据userId查询备份表中是否已经存在数据-->
+	<select id="findBakInfoByUId" parameterType="pd" resultType="pd">
+		select 
+			STUNO,
+            XUELI,
+            ZHUANYE,
+            STARTDATE,
+            ENDDATE,
+			BIANHAO,
+			WORKUNIT,
+			DUTY,
+			DIQU,	
+			HANGYE,
+			ZHICHENG,
+			USERNAME,
+			USERID,
+			STATE,
+			CLASS,
+			TEACHER,	
+			MAINTEACHER,
+			RENKETEACHER
+		from 
+			TB_STUDENTBAK
+		where 
+			USERID = #{userId} and STATE!='5'<!-- AND state!='2' -->
+	</select>
+	<!-- findBakInfoByUId1 特殊用途-->
+    <select id="findBakInfoByUId1" parameterType="pd" resultType="pd">
+		select 
+			STUNO,
+            XUELI,
+            ZHUANYE,
+            STARTDATE,
+            ENDDATE,
+			BIANHAO,
+			WORKUNIT,
+			DUTY,
+			DIQU,	
+			HANGYE,
+			ZHICHENG,
+			USERNAME,
+			USERID,
+			STATE,
+			CLASS,
+			TEACHER,	
+			MAINTEACHER,
+			RENKETEACHER
+		from 
+			TB_STUDENTBAK
+		where 
+			USERID = #{userId} and STATE!='5' 
+			   AND BIANHAO = (
+					SELECT
+						MIN(BIANHAO)
+					FROM
+						TB_STUDENTBAK
+					WHERE
+						USERID = #{userId} 
+				)
+			 
+	</select>
+	<!-- 通过编号和群组id查询是否存在此群组了 -->
+	<select id="isExsitGroup" parameterType="pd" resultType="pd">
+		select 
+			ID,
+			USERID,
+			GROUPID,
+			BIANHAO
+		from 
+			TB_GROUP_MEMBER
+		where 
+			GROUPID = #{groupId} and BIANHAO=#{bianhao}
+	</select>
+	<!-- 根据编号查询学生备份表信息 -->
+	<select id="findBakInfoByBianhao" parameterType="pd" resultType="pd">
+		select 
+			USERID,	
+			SEX,	
+			ZHUANYE,	
+			XUELI,
+			BRITHDAY,
+			BIANHAO,
+			STATE,
+			ENDDATE,
+			STUNO,
+			BIANHAO,
+            USERNAME,
+			WORKUNIT,
+			DUTY,
+			DIQU,	
+			HANGYE,
+			STATE,
+			USERNAME,
+			USERID,
+			STARTDATE		
+		from 
+			TB_STUDENTBAK
+		where 
+			BIANHAO = #{bianhao}
+	</select>
+	
+	<!-- 保存点赞信息 -->
+	<insert id="saveUpvoteInfo" parameterType="pd">
+		insert into TB_PICUPVOTE(
+			ID,	
+			USERID,	
+			FRIENDID,
+			CREATEDATE	
+		) values (
+			#{ID},	
+			#{USERID},	
+			#{FRIENDID},	
+			#{CREATEDATE}
+		)
+	</insert>
+	<!-- 保存忘记密码记录 -->
+	<insert id="forgetPwd" parameterType="pd">
+		insert into TB_FORGETPWD(
+			ID,	
+			USERID,	
+			USERNAME,	
+			LINKNBR,
+			FRIENDNAME1,
+			FRIENDNAME2,
+			CLASSROOM,
+			CREATEDATE	
+		) values (
+			#{ID},	
+			#{USERID},	
+			#{USERNAME},
+			#{LINKNBR},
+			#{FRIENDNAME1},	
+			#{FRIENDNAME2},
+			#{CLASSROOM},
+			#{CREATEDATE}
+		)
+	</insert>
+	
+	<!-- 获取点赞信息 之前是否进行过点赞了-->
+	<select id="getUpvoteInfo" parameterType="pd" resultType="pd">
+		select 
+			ID,	
+			USERID,
+			FRIENDID,
+			STATE,
+			CREATEDATE	
+		from 
+			TB_PICUPVOTE
+		where 
+			USERID = #{userId} AND FRIENDID = #{friendId}
+	</select>
+	
+	<!-- 更新好朋友头像点赞状态 -->
+	<update id="updateUpvoteInfoState">
+	  update TB_PICUPVOTE 
+	    set STATE = #{STATE} 
+	  where 
+	     USERID = #{USERID} AND FRIENDID = #{FRIENDID}
+	</update>
+	<!-- 根据UserId更新用户填写的工作信息 -->
+	<update id="updatebjjdInfoByUserId">
+	  update  TB_BJJDUSERINFO
+			set 
+			   <if test="WORKUNIT != null and WORKUNIT != ''">
+			      WORKUNIT = #{WORKUNIT},
+			   </if> 
+				<if test="DUTY != null and DUTY != ''">
+			      DUTY = #{DUTY},
+			   </if> 
+			   <if test="DIQU != null and DIQU != ''">
+			      DIQU = #{DIQU},
+			   </if> 
+			   <if test="HANGYE != null and HANGYE != ''">
+			      HANGYE = #{HANGYE},
+			   </if> 
+			   <if test="STATE != null and STATE != ''">
+			      STATE = #{STATE},
+			   </if> 
+			      XISUO=''
+			where 
+				BJJDUSERINFO_ID = #{USERID}
+	</update>
+	<!-- 获取点赞次数 状态为1的 -->
+	<select id="getUpvoteNbr" parameterType="pd" resultType="int">
+		select 
+			count(1)	
+		from 
+			TB_PICUPVOTE
+		where 
+			FRIENDID = #{friendId} and STATE ='1'
+	</select>
+	
+	<!-- 查询是否此人为好友头像进行点赞状态为1的 -->
+	<select id="isUpvote" parameterType="pd" resultType="int">
+		select 
+			count(1)	
+		from 
+			TB_PICUPVOTE
+		where 
+			USERID = #{userId} AND FRIENDID = #{friendId} and STATE ='1'
+	</select>
+	
+	
+	
+    <!-- 根据fromUserId 和toUserId 查询好友表中是否已经存在 -->
+    <select id="findFriInfoByUIdAndFId" parameterType="pd" resultType="pd">
+		select 
+			ID,	
+			FROMUSERID,
+			TOUSERID
+		from 
+			TB_FRIENDLIST
+		where 
+			FROMUSERID = #{FROMUSERID} AND TOUSERID = #{TOUSERID}
+	</select>
+    
+    
+	<!-- 用户注册列表   全量按照时间排序-->
+	<select id="datalistPage1" parameterType="page" resultType="pd">
+		select
+				a.BJJDUSERINFO_ID,	
+				a.USERNAME,	
+				a.ACCOUNT,	
+				a.PASSWORD,	
+				a.XUELI,
+				a.MAINTEACHER,
+				a.RENKETEACHER,
+				a.DAOSHI,
+				a.XUEYUAN,	
+				a.ZHAUNGYE,	
+				a.NIANJIE,
+				a.CLASSROOM,	
+				a.SEX,	
+				a.LINKNBR,	
+				a.EMAIL,	
+				a.POSTID,
+				a.ADDRESS,	
+				a.YAOQINGCODE,	
+				a.CREATEDATE,	
+				a.STATE,	
+				a.UNITNBRS,
+				a.WORKUNIT,
+				a.ZHICHENG,
+				a.HANGYE,
+				a.DIQU,
+				a.FROMUSERID,	
+                a.DUTY,
+                a.ISCHUJI,
+				a.ISOPENFRIENDYZ,	
+				a.ISAGREENSEEMYPIC					
+		from 
+				TB_BJJDUSERINFO a 
+				where 1=1
+				<if test="pd.userId!= null and pd.userId!= ''">
+			        and BJJDUSERINFO_ID = #{pd.userId}
+				</if>
+				<if test="pd.userName!= null and pd.userName!= ''">
+			        and USERNAME LIKE CONCAT(CONCAT('%', #{pd.userName}),'%') 
+				</if>
+				<if test="pd.state!= null and pd.state!= ''">
+			        and STATE = #{pd.state}
+				</if>
+				<if test="pd.xueli!= null and pd.xueli!= ''">
+			        and XUELI = #{pd.xueli}
+				</if>
+				<if test="pd.zhuanYe!= null and pd.zhuanYe!= ''">
+			        and ZHAUNGYE LIKE CONCAT(CONCAT('%', #{pd.zhuanYe}),'%') 
+				</if>
+				<if test="pd.nianjie!= null and pd.nianjie!= ''">
+			        and NIANJIE = #{pd.nianjie}
+				</if>
+				<if test="pd.lastLoginStart!= null and pd.lastLoginStart != '' and pd.lastLoginEnd!= null and pd.lastLoginEnd != '' ">
+			        and CREATEDATE between #{pd.lastLoginStart} and #{pd.lastLoginEnd}
+				</if>
+				
+		        ORDER BY a.CREATEDATE DESC
+				
+	</select>
+	
+	<!-- 根据UserId查询学生认证 信息表中的数据 -->
+	<select id="datalistPage18" parameterType="page" resultType="pd">
+		select
+				a.STUNO,
+				a.USERID,	
+				a.USERNAME,	
+				a.SEX,	
+				a.ZHUANYE,	
+				a.XUELI,
+				a.BIANHAO,
+				a.STARTDATE,
+				a.STATE,
+				a.ENDDATE				
+		from 
+				TB_STUDENTBAK a 
+				where 1=1
+				   and a.STATE not in ('3','5')
+				<if test="pd.userId!= null and pd.userId!= ''">
+			        and USERID LIKE #{pd.userId}
+				</if>
+				<if test="pd.zhuanYe!= null and pd.zhuanYe!= ''">
+			        and ZHUANYE LIKE #{pd.zhuanYe}
+				</if>
+				<if test="pd.startDate!= null and pd.startDate!= ''">
+			        and STARTDATE = #{pd.startDate}
+				</if>
+				<if test="pd.xueli!= null and pd.xueli!= ''">
+			        and XUELI = #{pd.xueli}
+				</if>
+		
+	</select>
+	<!-- 查询学院信息，联系我们等模块的列表 -->
+	<select id="datalistPage19" parameterType="page" resultType="pd">
+		select
+			a.ID,
+			a.TITLE,	
+			a.CONTENT,	
+			a.TYPE,
+			a.PICURL,	
+			a.CREATER,	
+			a.CREATEDATE				
+	    from 
+			TB_SUMMARY a 
+			  where 1=1  
+			<if test="pd.title!= null and pd.content!= ''">
+			     and a.TITLE LIKE CONCAT(CONCAT('%', #{pd.title}),'%') 
+			</if>
+			<if test="pd.type!= null and pd.type!= ''">
+		        and a.TYPE = #{pd.type}
+			</if>
+	</select>
+	
+	<!-- 联系总会  只有一条数据-->
+	<select id="linkUnionList" parameterType="page" resultType="pd">
+		select
+			a.ID,
+			a.TITLE,	
+			a.CONTENT,	
+			a.TYPE,
+			a.PICURL,
+			a.TEL,
+			a.FAX,
+			a.EMAIL,
+			a.ADDRESS,
+			a.WEIBO,	
+			a.CREATER,	
+			a.CREATEDATE				
+	    from 
+			TB_SUMMARY a 
+			  where ID='dcade763e58d40dfbe15571119e29ed1'
+	</select>
+	
+	<!-- 联系院校 -->
+	<select id="linkCollegeList" parameterType="page" resultType="pd">
+		select
+			a.ID,
+			a.TITLE,	
+			a.CONTENT,	
+			a.TYPE,
+			a.PICURL,
+			a.SHEQULINKNBR,
+	        a.SHEQUEMAIL,
+	        a.SHEQUADDRESS,
+	        a.ZHURENPERSON,
+	        a.ZHURENLINKNBR,
+	        a.ZHURENEMAIL,
+	        a.WORKER1NAME,
+	        a.WORKER1LINKNBR,
+	        a.WORKER1EMAIL,
+	        a.WORKER2NAME,
+	        a.WORKER2LINKNBR,
+	        a.WORKER2EMAIL,
+			a.CREATER,	
+			a.CREATEDATE				
+	    from 
+			TB_SUMMARY a 
+			  where ID='e05794e275a848b5b56172e2bc6f1290'
+	</select>
+	<!-- listCollege 各个系的详情 -->
+	<select id="listCollege" parameterType="page" resultType="pd">
+		select
+			a.ID,
+			a.TITLE,		
+			a.TYPE,
+			a.CREATER,	
+			a.CREATEDATE				
+	    from 
+			TB_SUMMARY a 
+			  where a.TYPE ='3'
+	</select>
+	<!-- 爱心捐助 -->
+	<select id="aixinHelpList" parameterType="page" resultType="pd">
+		select
+			a.ID,
+			a.TITLE,
+			a.CONTENT,	
+			a.PICURL,
+			a.STATE,
+	        a.HELPURL,
+			a.CREATER,	
+			a.CREATEDATE				
+	    from 
+		   TB_AIXIN_HELP a 
+		      where 1=1
+		       <if test="pd.title!= null and pd.title!= ''">
+			        and a.TITLE LIKE CONCAT(CONCAT('%', #{pd.title}),'%') 
+			   </if>
+			      order by a.CREATEDATE DESC
+	</select>
+	<!-- 查询有效的爱心捐助-->
+	<select id="listAixinHelpAll" parameterType="pd" resultType="pd">
+		select
+			a.ID,
+			a.TITLE,	
+			a.PICURL			
+	    from 
+		   TB_AIXIN_HELP a 
+		      where a.STATE	= #{STATE} 
+		         limit #{pageIndex},10
+	</select>
+	<!-- 查询有效的爱心捐助-->
+	<select id="listAixinHelpNbrs" parameterType="pd" resultType="pd">
+		select
+			a.ID,
+			a.TITLE,	
+			a.PICURL			
+	    from 
+		   TB_AIXIN_HELP a 
+		      where a.STATE	= #{STATE} 
+
+	</select>
+	<!-- 查询学生认证 信息表中的数据 -->
+	<select id="datalistPage10" parameterType="page" resultType="pd">
+		select
+				a.STUNO,
+				a.USERID,	
+				a.USERNAME,	
+				a.SEX,	
+				a.ZHUANYE,	
+				a.XUELI,
+				a.BIANHAO,
+				a.STARTDATE,
+				a.STATE,
+				a.ENDDATE				
+		from 
+				TB_STUDENTBAK a 
+				where 1=1
+				   and a.STATE not in('3','5')
+				<if test="pd.state!= null and pd.state!= ''">
+			        and STATE = #{pd.state}
+				</if>   
+				<if test="pd.userName!= null and pd.userName!= ''">
+			        and USERNAME LIKE CONCAT(CONCAT('%', #{pd.userName}),'%') 
+				</if>
+				<if test="pd.zhuanYe!= null and pd.zhuanYe!= ''">
+			        and ZHUANYE LIKE CONCAT(CONCAT('%', #{pd.zhuanYe}),'%')
+				</if>
+				<if test="pd.startDate!= null and pd.startDate!= ''">
+			        and STARTDATE = #{pd.startDate}
+				</if>
+				<if test="pd.xueli!= null and pd.xueli!= ''">
+			        and XUELI = #{pd.xueli}
+				</if>
+		
+	</select>
+	
+	<!-- 根据userId查询与之相关的好友信息(添加成功的) -->
+	<select id="datalistPage6" parameterType="page" resultType="pd">
+		select
+				a.BJJDUSERINFO_ID,	
+				a.USERNAME,	
+				a.ACCOUNT,	
+				a.PASSWORD,	
+				a.XUELI,
+				a.MAINTEACHER,
+				a.RENKETEACHER,
+				a.DAOSHI,
+				a.XUEYUAN,	
+				a.ZHAUNGYE,	
+				a.NIANJIE,
+				a.CLASSROOM,	
+				a.SEX,	
+				a.LINKNBR,	
+				a.EMAIL,	
+				a.POSTID,
+				a.ADDRESS,	
+				a.YAOQINGCODE,	
+				a.CREATEDATE,	
+				a.STATE,	
+				a.UNITNBRS,
+				a.WORKUNIT,
+				a.ZHICHENG,
+				a.HANGYE,
+				a.DIQU,
+				a.FROMUSERID,	
+				a.ISOPENFRIENDYZ,	
+				a.ISAGREENSEEMYPIC					
+		from 
+				TB_BJJDUSERINFO a 
+				where BJJDUSERINFO_ID in 
+					(
+						SELECT
+							toUserId
+						FROM
+							tb_friendlist
+						WHERE
+							FROMUSERID = #{pd.userId}
+						AND STATE = '1'
+					)
+		        ORDER BY a.CREATEDATE DESC
+				
+	</select>
+	<!-- 查询群组列表 -->
+	<select id="datalistPage7" parameterType="page" resultType="pd">
+		select
+				a.ID,	
+				a.GROUPID,	
+				a.TYPE,
+				a.GROUPNAME,	
+				a.CREATEDATE,	
+				a.PICURL,		
+				a.STATE					
+		from 
+				TB_GROUP a 	
+		    where 1=1
+				<if test="pd.groupName!= null and pd.groupName!= ''">
+				    and GROUPNAME LIKE CONCAT(CONCAT('%', #{pd.groupName}),'%')
+				</if>
+				<if test="pd.type!= null and pd.type!= ''">
+			        and TYPE = #{pd.type}
+				</if>
+				<if test="pd.lastLoginStart!= null and pd.lastLoginStart != '' and pd.lastLoginEnd!= null and pd.lastLoginEnd != '' ">
+			        and CREATEDATE between #{pd.lastLoginStart} and #{pd.lastLoginEnd}
+				</if>
+				
+				ORDER BY CREATEDATE DESC
+			
+	</select>
+	<!-- 根据userId查询此人所在群组信息 -->
+	<select id="datalistPage8" parameterType="page" resultType="pd">
+		select
+				a.ID,	
+				a.GROUPID,
+				a.TYPE,	
+				a.GROUPNAME,	
+				a.CREATEDATE,	
+				a.PICURL,		
+				a.STATE					
+		   from 
+				TB_GROUP a 	
+			where groupId=(select groupId from TB_GROUP_MEMBER
+			      where userId = #{pd.userId})
+				ORDER BY CREATEDATE DESC
+	</select>
+	<!-- 查询群组成员信息 -->
+	<select id="datalistPage9" parameterType="page" resultType="pd">
+		select
+				a.BJJDUSERINFO_ID,	
+				a.USERNAME,	
+				a.ACCOUNT,	
+				a.PASSWORD,	
+				a.XUELI,
+				a.MAINTEACHER,
+				a.RENKETEACHER,
+				a.DAOSHI,
+				a.XUEYUAN,	
+				a.ZHAUNGYE,	
+				a.NIANJIE,
+				a.CLASSROOM,	
+				a.SEX,	
+				a.LINKNBR,	
+				a.EMAIL,	
+				a.POSTID,
+				a.ADDRESS,	
+				a.YAOQINGCODE,	
+				a.CREATEDATE,	
+				a.STATE,	
+				a.UNITNBRS,
+				a.WORKUNIT,
+				a.ZHICHENG,
+				a.HANGYE,
+				a.DIQU,
+				a.RUXUEPICURL,
+				a.BIYEPICURL,
+				a.NOWPICURL,
+				a.FROMUSERID,	
+				a.ISOPENFRIENDYZ,	
+				a.ISAGREENSEEMYPIC					
+		from 
+				TB_BJJDUSERINFO a 
+			where BJJDUSERINFO_ID in (select userId from TB_GROUP_MEMBER
+			      where groupId = #{pd.groupId})
+				ORDER BY CREATEDATE DESC
+	</select>
+	<!-- 查询群组成员新版 -->
+	<select id="datalistPage11" parameterType="page" resultType="pd">
+	
+	  SELECT    b.userId,
+				a.USERNAME,
+				b.SEX,
+				b.XUELI,
+				b.ZHUANYE,
+				b.STARTDATE,
+				b.ENDDATE,	
+				a.BIANHAO,
+				b.STATE		
+		from 
+				TB_GROUP_MEMBER a,
+				TB_STUDENTBAK b
+			      where a.groupId =#{pd.groupId}
+			          and a.BIANHAO=b.BIANHAO
+			    <if test="pd.userName!= null and pd.userName!= ''">
+			        and a.USERNAME LIKE CONCAT(CONCAT('%', #{pd.userName}),'%')  
+				</if>
+				<if test="pd.state!= null and pd.state!= ''">
+			        and b.STATE = #{pd.state}
+				</if>
+	</select>
+	<!-- 保存apk信息 -->
+	<update id="saveApkVersion" parameterType="pd">
+	   update
+	        TB_APKVERSION
+	         set VERSION=#{VERSION},
+	             PATH=#{PATH},
+	             SHUOMING=#{SHUOMING},
+	             CREATEDATE=#{CREATEDATE}
+	         where ID=#{ID}
+	</update>
+		
+	<!-- 取得apk版本列表 -->
+	<select id="datalistPage12" parameterType="page" resultType="pd">
+		select
+				a.ID,	
+				a.VERSION,
+				a.SHUOMING,
+				a.CREATEDATE		
+		from 
+				TB_APKVERSION a
+	</select>
+	<!-- 取得群组成员 -->
+	<select id="getGroupMember" parameterType="pd" resultType="pd">
+		select
+				a.USERID,	
+				a.USERNAME,	
+				a.BIANHAO,
+				a.STATE		
+		from 
+				TB_GROUP_MEMBER a
+			      where a.groupId =#{groupId}
+			    <if test="userName!= null and userName!= ''">
+			        and USERNAME LIKE #{userName}
+				</if>
+				<if test="state!= null and state!= ''">
+			        and STATE = #{state}
+				</if>
+	</select>
+	<!-- 用户注册列表   需要认证的按照时间排序-->
+	<select id="datalistPage5" parameterType="page" resultType="pd">
+		select
+				a.BJJDUSERINFO_ID,	
+				a.USERNAME,	
+				a.ACCOUNT,	
+				a.PASSWORD,	
+				a.XUEYUAN,	
+				a.ZHAUNGYE,	
+				a.NIANJIE,	
+				a.SEX,	
+				a.LINKNBR,	
+				a.EMAIL,	
+				a.POSTID,	
+				a.YAOQINGCODE,	
+				a.CREATEDATE,	
+				a.STATE,	
+				a.XUELI,
+				a.RUXUEPICURL,
+				a.BIYEPICURL,
+				a.NOWPICURL,	
+				a.FROMUSERID,	
+				a.ISOPENFRIENDYZ,	
+				a.ISAGREENSEEMYPIC					
+		    from 
+				TB_BJJDUSERINFO a 
+			where a.STATE='2'
+			    <if test="pd.userName!= null and pd.userName!= ''">
+			        and USERNAME LIKE #{pd.userName}
+				</if>
+				ORDER BY CREATEDATE DESC
+			
+	</select>
+	<!-- 用户认证列表   需要认证的按照时间排序-->
+	<select id="datalistPage17" parameterType="page" resultType="pd">
+		select
+				a.ID,	
+			    a.USERID,	
+				a.USERNAME,
+				a.STUNO,
+				b.SEX,
+				b.CREATEDATE,
+			    a.BRITHDAY,
+				a.ZHUANYE,
+				a.XUELI,
+				a.STARTDATE,
+				a.ENDDATE,
+				a.TEACHER,
+				a.BIANHAO,
+				a.LINKNBR,
+				a.WORKUNIT,
+				a.DUTY,
+				a.DIQU,	
+				a.HANGYE,
+				a.MAILBOX,
+				a.CLASS,
+				a.PICURL,
+				a.STATE					
+		   from 
+				TB_STUDENTBAK a,
+				TB_BJJDUSERINFO b
+			where a.STATE in('2','4') and a.USERID=b.BJJDUSERINFO_ID
+			    <if test="pd.userName!= null and pd.userName!= ''">
+			        and a.USERNAME LIKE CONCAT(CONCAT('%', #{pd.userName}),'%')
+				</if>
+             order by b.CREATEDATE desc
+	</select>
+	<!-- 
+	<select id="datalistPage17" parameterType="page" resultType="pd">
+	      SELECT
+				a.ID,
+				a.USERID,
+				a.USERNAME,
+				a.STUNO,
+				c.SEX,
+                c.STATE,
+                c.CREATEDATE,
+				a.BRITHDAY,
+				a.ZHUANYE,
+				a.XUELI,
+				a.STARTDATE,
+				a.ENDDATE,
+				a.TEACHER,
+				a.BIANHAO,
+				a.LINKNBR,
+				a.WORKUNIT,
+				a.DUTY,
+				a.DIQU,
+				a.HANGYE,
+				a.MAILBOX,
+				a.CLASS,
+				a.PICURL
+			FROM
+				TB_STUDENTBAK a,
+                tb_bjjduserinfo c
+			WHERE
+				a.USERID IN (
+					SELECT
+						b.BJJDUSERINFO_ID
+					FROM
+						tb_bjjduserinfo b
+					WHERE
+						b.STATE IN ('2', '4')
+	   ) and a.userId=c.BJJDUSERINFO_ID
+            <if test="pd.userName!= null and pd.userName!= ''">
+		        and a.USERNAME LIKE CONCAT(CONCAT('%', #{pd.userName}),'%')
+			</if>
+              ORDER BY c.CREATEDATE DESC
+	
+	</select>
+	 -->
+	<!-- 查询投诉内容 -->
+	<select id="datalistPage4" parameterType="page" resultType="pd">
+		select
+				a.ID,
+				a.USERID,	
+				b.USERNAME,	
+				b.LINKNBR,
+				a.COMPLAIN,	
+				a.TYPE,		
+				a.CREATEDATE,	
+				a.STATE						
+		from 
+			TB_COMPLAIN a,
+				TB_BJJDUSERINFO b
+			where a.USERID=b.BJJDUSERINFO_ID
+			   <if test="pd.type!= null and pd.type!= ''">
+			        and a.TYPE = #{pd.type}
+				</if>
+				<if test="pd.state!= null and pd.state!= ''">
+			        and a.STATE = #{pd.state}
+				</if>
+		ORDER BY a.CREATEDATE desc
+			  
+	</select>
+	<!-- 查询意见反馈内容列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		SELECT
+			a.ID,
+			a.USERID,
+			b.USERNAME,
+			a.CONTENT,
+			a.TYPE,
+			a.CREATEDATE,
+			a.STATE
+		FROM
+			TB_SUGGEST a,
+			TB_BJJDUSERINFO b
+		WHERE 
+			a.USERID = b.BJJDUSERINFO_ID 
+			<if test="pd.type!= null and pd.type!= ''">
+			   and a.TYPE = #{pd.type}
+			</if>
+		ORDER BY a.CREATEDATE desc
+	</select>
+	<!-- 查看上传照片的列表 -->
+    <select id="datalistPage2" parameterType="page" resultType="pd">
+		SELECT
+			a.ID,
+			a.USERID,
+			b.USERNAME,
+			b.ZHAUNGYE,
+			b.NIANJIE,
+			a.PICTYPE,
+			a.PICURL,
+			a.CREATEDATE,
+			a.STATE
+		FROM
+			TB_UPLOADPIC a,
+			TB_BJJDUSERINFO b
+		WHERE 
+		    a.USERID = b.BJJDUSERINFO_ID 
+
+				<if test="pd.userName!= null and pd.userName!= ''">
+			        and USERNAME LIKE CONCAT(CONCAT('%', #{pd.userName}),'%')
+				</if>
+				<if test="pd.state!= null and pd.state!= ''">
+			        and a.STATE = #{pd.state}
+				</if>
+				<if test="pd.lastLoginStart!= null and pd.lastLoginStart != '' and pd.lastLoginEnd!= null and pd.lastLoginEnd != '' ">
+			        and a.CREATEDATE between #{pd.lastLoginStart} and #{pd.lastLoginEnd}
+				</if>	
+		ORDER BY a.CREATEDATE desc
+	</select>
+	<!-- 查询忘记密码的管理列表 -->
+	 <select id="datalistPage3" parameterType="page" resultType="pd">
+		SELECT
+			a.ID,
+			a.USERID,
+			a.USERNAME,
+			b.PASSWORD,
+			a.LINKNBR,
+			a.FRIENDNAME1,
+			a.FRIENDNAME2,
+			a.CREATEDATE,
+			a.STATE
+		FROM
+			TB_FORGETPWD a,
+			TB_BJJDUSERINFO b
+		where 
+          a.USERID=b.BJJDUSERINFO_ID
+            <if test="pd.userName!= null and pd.userName!= ''">
+			    and b.USERNAME LIKE CONCAT(CONCAT('%', #{pd.userName}),'%')
+			</if>
+			<if test="pd.state!= null and pd.state!= ''">
+		        and a.STATE = #{pd.state}
+			</if>
+			   order by a.CREATEDATE desc
+	</select>
+	<!-- 群公告列表 -->
+	<select id="datalistPage13" parameterType="page" resultType="pd">
+		SELECT
+			a.ID,
+			a.USERID,
+			a.GROUPID,
+			b.GROUPNAME,
+			a.USERNAME,
+			a.TITLE,
+			a.NOTICE,
+			a.CREATEDATE,
+			a.STATE
+		FROM
+			TB_GROUP_NOTICE a,
+			TB_GROUP b
+		where 
+           a.GROUPID=b.ID
+			<if test="pd.state!= null and pd.state!= ''">
+		        and a.STATE = #{pd.state}
+			</if>
+			  order by a.CREATEDATE desc
+	</select>
+	<!-- 群聊审查列表 -->
+	<select id="datalistPage14" parameterType="page" resultType="pd">
+		SELECT
+			a.ID,
+			a.USERID,
+			a.GROUPID,
+			b.GROUPNAME,
+			a.USERNAME,
+			a.CONTENT,
+			a.CREATEDATE,
+			a.STATE
+		FROM
+			TB_MESSAGE_GROUP a,
+			TB_GROUP b
+		where 
+           a.GROUPID=b.ID
+			<if test="pd.state!= null and pd.state!= ''">
+		        and a.STATE = #{pd.state}
+			</if>
+			   ORDER BY createDate DESC
+		
+	</select>
+	
+	<!-- 获取好友姓名 -->
+	 <select id="getFriName" parameterType="page" resultType="pd">
+		SELECT
+			USERNAME,	
+			ACCOUNT,	
+			PASSWORD,	
+			XUEYUAN,	
+			ZHAUNGYE,	
+			NIANJIE,	
+			SEX,	
+			LINKNBR,	
+			EMAIL,	
+			POSTID,	
+			YAOQINGCODE,	
+			CREATEDATE	
+		FROM
+			tb_bjjduserinfo
+		WHERE
+			BJJDUSERINFO_ID IN (
+				SELECT
+					toUserId
+				FROM
+					TB_FRIENDLIST
+				WHERE
+					fromUserId = #{userId}	  
+	   )
+	      order by CREATEDATE desc
+	</select>
+	
+	<!-- 根据更新忘记密码信息状态 -->
+	<update id="updatePwdState" parameterType="pd">
+		update  TB_FORGETPWD
+			set 
+				
+				STATE=#{STATE}
+			where 
+				ID = #{ID}
+	</update>
+	<!-- 更新用户密码 -->
+	<update id="updatePwd" parameterType="pd">
+		update  TB_BJJDUSERINFO
+			set 
+				PASSWORD='111111'
+			where 
+				 BJJDUSERINFO_ID = #{userId}
+	</update>
+	
+	<!-- 更新好友列表里是否让别人看自己的状态 -->
+	<update id="updateFriendnotSeeMy" parameterType="pd">
+		update  TB_FRIENDLIST
+			set 
+				ISORNOTSEEMY=#{isOrnotSeeMy}
+			where 
+				FROMUSERID = #{userId} and TOUSERID = #{friendId}
+	</update>
+	<!-- 更新好友列表里我是否看别人的状态 -->
+	<update id="updateFriendnotSeeOther" parameterType="pd">
+		update  TB_FRIENDLIST
+			set 
+				ISORNOTSEEOTHER=#{isOrnotSeeOther}
+			where 
+				FROMUSERID = #{userId} and TOUSERID = #{friendId}
+	</update>
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.BJJDUSERINFO_ID,	
+				a.USERNAME,	
+				a.ACCOUNT,	
+				a.PASSWORD,	
+				a.XUEYUAN,	
+				a.ZHAUNGYE,	
+				a.NIANJIE,	
+				a.SEX,	
+				a.LINKNBR,	
+				a.EMAIL,	
+				a.POSTID,	
+				a.YAOQINGCODE,	
+				a.CREATEDATE,	
+				a.STATE,	
+				a.XUELI,	
+				a.FROMUSERID,	
+				a.BAK2,	
+				a.BAK3,	
+				a.BAK4,	
+				a.BAK5
+				
+		from 
+				TB_BJJDUSERINFO a
+	</select>
+	
+	<!-- 按照userName模糊查询  (加好友只能是在注册成功的人员中加)-->
+	<select id="getFriendInfo" parameterType="pd" resultType="pd">
+		select
+				a.BJJDUSERINFO_ID,	
+				a.USERNAME,	
+				a.ACCOUNT,	
+				a.PASSWORD,	
+				a.XUEYUAN,	
+				a.ZHAUNGYE,	
+				a.NIANJIE,	
+				a.SEX,	
+				a.LINKNBR,	
+				a.EMAIL,	
+				a.POSTID,	
+				a.YAOQINGCODE,	
+				a.CREATEDATE,	
+				a.STATE,	
+				a.XUELI,	
+				a.FROMUSERID,
+				a.RUXUEPICURL,
+				a.BIYEPICURL,
+				a.NOWPICURL
+				
+		from 
+				TB_BJJDUSERINFO a
+				  where a.USERNAME like #{userName} and a.STATE='1'
+	</select>
+	
+	<!-- 根据userId查询此人参加的活动 -->
+	<select id="getActiveInfoByUId" parameterType="pd" resultType="pd">
+		select
+				a.APPLY_ACTIVITY_ID,	
+				a.USER_ID,	
+				a.ACTIVITY_ID,	
+				a.CREATEDATE,
+				b.TITLE,	
+				b.STARTTIME,	
+				b.ENDTIME,	
+				b.ADDRESS,	
+				b.PHOTO,
+				b.CONTENT,
+				b.ACTIVITY_ID,
+				b.STATEE,
+				b.CREATER,
+				b.NUMB
+		from  TB_APPLY_ACTIVITY a,
+		      TB_ACTIVITY b 
+				  where a.ACTIVITY_ID = b.ACTIVITY_ID
+				     and a.USER_ID= #{userId}
+                         limit #{pageIndex},5
+	</select>
+	<!-- 根据userId查询备份表中还在审核中的数据条数  -->
+	<select id="attendActiveNmbs" parameterType="String" resultType="int">
+		select 
+			count(1)	
+		from 
+			TB_APPLY_ACTIVITY
+		where 
+			USER_ID = #{userId}
+	</select>
+	
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from TB_BJJDUSERINFO
+		where 
+			BJJDUSERINFO_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	<!-- 批量删除走进学院信息 -->
+	<delete id="deleteSummaryAll" parameterType="String">
+		delete from TB_SUMMARY
+		where 
+			ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	<!-- 批量删除爱心捐助 -->
+	<delete id="deleteAixinHelpAll" parameterType="String">
+		delete from TB_AIXIN_HELP
+		where 
+			ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	<!-- 批量删除群组消息 -->
+	<delete id="deleteGroupAll" parameterType="String">
+		delete from TB_GROUP
+		where 
+			ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 批量删除投诉列表数据 -->
+	<delete id="deleteComplainAll" parameterType="String">
+		delete from TB_COMPLAIN
+		where 
+			ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	<!-- 批量删除 意见反馈列表-->
+	<delete id="deleteSuggestAll" parameterType="String">
+		delete from TB_SUGGEST
+		where 
+			ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	<!-- 批量删除 意见反馈列表-->
+	<delete id="deleteStudentBakAll" parameterType="String">
+		delete from TB_STUDENTBAK
+		where 
+			BIANHAO in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	
+	<!-- 批量删除上传照片验证列表 -->
+	<delete id="deleteUploadPicAll" parameterType="String">
+		delete from TB_UPLOADPIC
+		where 
+			ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	<!-- 批量删除群公告列表信息 -->
+	<delete id="deleteGroupNoticeAll" parameterType="String">
+		delete from TB_GROUP_NOTICE
+		where 
+			ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 批量删除群消息列表信息 -->
+	<delete id="deleteGroupMessageAll" parameterType="String">
+		delete from TB_MESSAGE_GROUP
+		where 
+			ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 批量删除忘记密码列表信息 -->
+	<delete id="deleteForgetPwdAll" parameterType="String">
+		delete from TB_FORGETPWD
+		where 
+			ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 批量审批群消息状态  通过-->
+	<update id="tgGroupMessageAll" parameterType="String">
+	  update TB_MESSAGE_GROUP set state = '1'
+	    where 
+	      ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+            #{item}
+		</foreach>
+	</update>
+	<!-- 批量审批群消息状态  不通过-->
+	<update id="notTgGroupMessageAll" parameterType="String">
+	  update TB_MESSAGE_GROUP set state = '2'
+	    where 
+	      ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+            #{item}
+		</foreach>
+	</update>
+	
+	<!--批量更新校友认证信息表状态 -->
+	<update id="updateStuBakInfoState" parameterType="String">
+	  update TB_STUDENTBAK set state = '0'
+	    where 
+	      USERID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+            #{item}
+		</foreach>
+	</update>
+	
+	<!-- 删除群成员 -->
+	<delete id="deleteGroupMemberAll" parameterType="String">
+		delete from TB_GROUP_MEMBER
+		where BIANHAO=#{bianhao} and GROUPID=#{groupId}
+	</delete>
+	
+	<!-- 批量添加群组成员 -->
+	<insert id="addGroupPersons" parameterType="pd">
+	   insert into
+	        TB_GROUP_MEMBER 
+	          (GROUPID,BIANHAO,USERID,USERNAME,TYPE,PICURL,STATE) 
+	          values
+	         (#{groupId},#{bianhao},#{userId},#{userName},#{type},#{picUrl},#{state})
+	</insert>
+    
+    <!-- 添加登录信息日志 -->
+    <insert id="saveLoginInfo" parameterType="pd">
+	   insert into
+	        TB_LOGININFO 
+	          (ID,USERID,USERNAME,CREATEDATE) 
+	          values
+	         (#{id},#{userId},#{userName},#{createDate})
+	</insert>
+</mapper>

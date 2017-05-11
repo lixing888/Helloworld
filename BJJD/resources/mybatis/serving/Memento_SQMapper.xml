@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Memento_SQMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into TB_MEMENTO_SQ(
+			USERID,	
+			MEMENTO_ID,	
+			CREATEDATE,	
+			STATEE,	
+			MEMENTO_SQ_ID
+		) values (
+			#{USERID},	
+			#{MEMENTO_ID},	
+			#{CREATEDATE},	
+			#{STATEE},	
+			#{MEMENTO_SQ_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from TB_MEMENTO_SQ
+		where 
+			MEMENTO_SQ_ID = #{MEMENTO_SQ_ID}
+	</delete>
+	
+	<!-- 根据userId和 mementoId删除申请纪念品信息-->
+	<delete id="deleteMementoSqInfo" parameterType="pd">
+		delete from TB_MEMENTO_SQ
+		where 
+			MEMENTO_ID = #{MEMENTO_ID} 
+			    and USERID = #{USERID}  
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  TB_MEMENTO_SQ
+			set 
+			MEMENTO_SQ_ID = MEMENTO_SQ_ID
+			where 
+				MEMENTO_SQ_ID = #{MEMENTO_SQ_ID}
+	</update>
+	<!-- 改变纪念品发放状态 -->
+	<update id="isSend" parameterType="pd">
+		  update  
+		      TB_MEMENTO_SQ
+			     set 
+			  STATEE = #{STATEE}
+			where 
+				MEMENTO_SQ_ID = #{MEMENTO_SQ_ID}
+	</update>
+	<!-- 根据UserId和 MEMENTO_ID查询数据-->
+	<select id="findMementoInfoByUId" parameterType="pd" resultType="pd">
+		select 
+			USERID,	
+			MEMENTO_ID,	
+			CREATEDATE,	
+			STATEE,	
+			MEMENTO_SQ_ID
+		from 
+			TB_MEMENTO_SQ
+		where 
+			MEMENTO_ID = #{mementoId} and USERID=#{userId}
+	</select>
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			USERID,	
+			MEMENTO_ID,	
+			CREATEDATE,	
+			STATEE,	
+			MEMENTO_SQ_ID
+		from 
+			TB_MEMENTO_SQ
+		where 
+			MEMENTO_SQ_ID = #{MEMENTO_SQ_ID}
+	</select>
+	
+	<!-- 通过UserID获取数据 -->
+	<select id="findByUserIdOrMementoId" parameterType="pd" resultType="pd">
+		select 
+			MEMENTO_ID,
+			STATEE		
+		from 
+			TB_MEMENTO_SQ
+		where 
+			USERID = #{USERID}
+			<if test="MEMENTO_ID != null and MEMENTO_ID !=''">
+			   and  MEMENTO_ID =#{MEMENTO_ID}
+			</if>
+	</select>
+	
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.USERID,	
+				a.MEMENTO_ID,	
+				a.CREATEDATE,	
+				a.STATEE,	
+				a.MEMENTO_SQ_ID
+		   from 
+				TB_MEMENTO_SQ a
+	</select>
+	<!-- 查询该纪念品申请人员信息 -->
+	<select id="datalistPage2" parameterType="page" resultType="pd">
+	   SELECT
+	      b.MEMENTO_SQ_ID,
+		  a.USERNAME,
+		  a.LINKNBR,
+		  b.STATEE,
+		  b.CREATEDATE 
+		FROM
+			tb_bjjduserinfo a,
+		  tb_memento_sq b
+		WHERE  BJJDUSERINFO_ID IN (
+					SELECT
+						userId
+					FROM
+						tb_memento_sq
+					WHERE
+						MEMENTO_ID = #{pd.MEMENTO_ID}
+	    )   AND b.MEMENTO_ID=#{pd.MEMENTO_ID}
+            AND a.BJJDUSERINFO_ID=b.USERID
+	        <if test="pd.USERNAME != null and pd.USERNAME !=''">
+			   and   a.USERNAME =#{pd.USERNAME}
+			</if>
+			<if test="pd.LINKNBR != null and pd.LINKNBR !=''">
+			   and   a.LINKNBR =#{pd.LINKNBR}
+			</if>
+    </select>
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.USERID,	
+				a.MEMENTO_ID,	
+				a.CREATEDATE,	
+				a.STATEE,	
+				a.MEMENTO_SQ_ID
+		from 
+				TB_MEMENTO_SQ a
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from TB_MEMENTO_SQ
+		where 
+			MEMENTO_SQ_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

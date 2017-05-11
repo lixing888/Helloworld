@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ReleaseMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into TB_RELEASE(
+			TYPEE,	
+			TITLE,	
+			CONTENT,	
+			CREATEUSER,	
+			CREATEDATE,
+			STATE,
+			PHOTO,
+			RELEASE_ID
+		) values (
+			#{TYPEE},	
+			#{TITLE},	
+			#{CONTENT},	
+			#{CREATEUSER},	
+			#{CREATEDATE},
+			#{STATE},
+			#{PHOTO},	
+			#{RELEASE_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from TB_RELEASE
+		where 
+			RELEASE_ID = #{RELEASE_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  TB_RELEASE
+			set 
+			STATE = 1
+			where 
+				RELEASE_ID = #{RELEASE_ID}
+	</update>
+	
+	<!-- 根据ID更新状态 -->
+	<update id="editStateById" parameterType="pd">
+		update  TB_RELEASE
+			set 
+			STATE = #{STATE}
+			where 
+				RELEASE_ID = #{RELEASE_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			TYPEE,	
+			TITLE,	
+			CONTENT,	
+			CREATEUSER,	
+			CREATEDATE,	
+			PHOTO,
+			RELEASE_ID
+		from 
+			TB_RELEASE
+		where 
+			RELEASE_ID = #{RELEASE_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.TYPEE,	
+				a.TITLE,	
+				a.CONTENT,	
+				a.CREATEUSER,	
+				a.CREATEDATE,
+				a.PHOTO,
+				a.STATE,	
+				a.RELEASE_ID,
+				b.USERNAME,
+				b.LINKNBR
+		from 
+				TB_RELEASE a ,TB_BJJDUSERINFO b
+		where   
+		 		a.CREATEUSER=b.BJJDUSERINFO_ID
+		 		<if test="pd.field1!= null and pd.field1 != ''">
+			        and TITLE LIKE CONCAT(CONCAT('%', #{pd.field1}),'%')   
+				</if>
+				<if test="pd.field4!= null and pd.field4 != ''">
+			        and USERNAME LIKE  CONCAT(CONCAT('%', #{pd.field4}),'%')    
+				</if>
+				<if test="pd.field2!= null and pd.field2 != ''">
+			         and a.STATE = #{pd.field2} 
+				</if>
+				<if test="pd.type!= null and pd.type != ''">
+			         and a.TYPEE = #{pd.type} 
+				</if>
+				order by a.CREATEDATE desc
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.TYPEE,	
+				a.TITLE,	
+				a.CONTENT,	
+				a.CREATEUSER,	
+				a.CREATEDATE,
+				a.PHOTO,	
+				a.RELEASE_ID,
+				a.STATE,
+				b.USERNAME,
+				b.LINKNBR
+		from 
+				TB_RELEASE a ,TB_BJJDUSERINFO b
+		where   a.CREATEUSER=b.BJJDUSERINFO_ID
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from TB_RELEASE
+		where 
+			RELEASE_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MementoMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into TB_MEMENTO(
+			TITLE,	
+			CONTENT,	
+			STATE,	
+			GOODSURL,	
+			PHOTO,	
+			CREATEUSER,	
+			CREATEDATE,	
+			NUMB,	
+			MEMENTO_ID
+		) values (
+			#{TITLE},	
+			#{CONTENT},	
+			#{STATE},	
+			#{GOODSURL},	
+			#{PHOTO},	
+			#{CREATEUSER},	
+			#{CREATEDATE},	
+			#{NUMB},	
+			#{MEMENTO_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from TB_MEMENTO
+		where 
+			MEMENTO_ID = #{MEMENTO_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  TB_MEMENTO
+			set 
+				TITLE = #{TITLE},
+				CONTENT = #{CONTENT},
+				STATE = #{STATE},
+				GOODSURL = #{GOODSURL},
+				PHOTO = #{PHOTO},
+				CREATEUSER = #{CREATEUSER},
+				CREATEDATE = #{CREATEDATE},
+				NUMB = #{NUMB},
+			MEMENTO_ID = MEMENTO_ID
+			where 
+				MEMENTO_ID = #{MEMENTO_ID}
+	</update>
+	
+<!-- 	删除图片 -->
+	<update id="delTp" parameterType="pd">
+		update  TB_MEMENTO
+			set 
+				PHOTO = ''
+			where 
+				MEMENTO_ID = #{MEMENTO_ID}
+	</update>
+	
+			<!-- 纪念品下架 -->
+	<update id="delTpState" parameterType="pd">
+		update  TB_MEMENTO
+			set 
+				STATE = #{STATE}
+			where 
+				MEMENTO_ID = #{MEMENTO_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			TITLE,	
+			CONTENT,	
+			STATE,	
+			GOODSURL,	
+			PHOTO,	
+			(SELECT COUNT(1) FROM tb_memento_sq b WHERE b.MEMENTO_ID=a.MEMENTO_ID) AS NUMB,	
+			CREATEUSER,	
+			CREATEDATE,	
+			NUMB,	
+			MEMENTO_ID
+		from 
+			TB_MEMENTO a
+		where 
+			MEMENTO_ID = #{MEMENTO_ID}
+	</select>
+
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.TITLE,	
+				a.CONTENT,	
+				a.STATE,	
+				a.GOODSURL,	
+				a.PHOTO,	
+				a.CREATEUSER,	
+				a.CREATEDATE,	
+				(SELECT COUNT(1) FROM tb_memento_sq b WHERE b.MEMENTO_ID=a.MEMENTO_ID) AS NUMB,	
+				a.MEMENTO_ID
+		   from 
+				TB_MEMENTO a
+				   where 1=1
+				     <if test="pd.title!= null and pd.title!= ''">
+			             and a.TITLE LIKE CONCAT(CONCAT('%', #{pd.title}),'%')
+				     </if>
+				     <if test="pd.state!= null and pd.state!= ''">
+			             and a.STATE = #{pd.state}
+				     </if>
+				ORDER BY a.CREATEDATE DESC
+	</select>
+	<!-- 取得全部的纪念品信息 -->
+	<select id="listAllNbrs" parameterType="pd" resultType="pd">
+		select
+				a.TITLE,	
+				a.CONTENT,	
+				a.STATE,	
+				a.GOODSURL,	
+				a.PHOTO,	
+				a.CREATEUSER,	
+				a.CREATEDATE,	
+				a.NUMB,	
+				a.MEMENTO_ID
+		from 
+				TB_MEMENTO a
+				   where STATE=#{state}
+			ORDER BY a.CREATEDATE DESC
+	</select>
+	<!-- 列表(上架的)-->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.TITLE,	
+				a.CONTENT,	
+				a.STATE,	
+				a.GOODSURL,	
+				a.PHOTO,	
+				a.CREATEUSER,	
+				a.CREATEDATE,	
+				(SELECT COUNT(1) FROM tb_memento_sq b WHERE b.MEMENTO_ID=a.MEMENTO_ID) AS NUMB,	
+				a.MEMENTO_ID
+		from 
+				TB_MEMENTO a
+				  where a.STATE='0'
+				ORDER BY a.CREATEDATE DESC
+				    limit #{pageIndex},5
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from TB_MEMENTO
+		where 
+			MEMENTO_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

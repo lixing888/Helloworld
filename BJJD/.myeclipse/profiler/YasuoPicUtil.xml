@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<entry key="app_preset_prof_preset_name">YasuoPicUtil Launch Configuration</entry>
+<entry key="app_preset_prof_preset_filter_s"/>
+<entry key="app_preset_prof_preset_filter_p">com.fh.controller.app.appuser.*,
+com.fh.controller.app.information.*,
+com.fh.controller.app.serving.*,
+com.fh.controller.base.*,
+com.fh.controller.information.activity.*,
+com.fh.controller.information.apply_activity.*,
+com.fh.controller.information.celebrity.*,
+com.fh.controller.information.oldphoto.*,
+com.fh.controller.information.pictures.*,
+com.fh.controller.information.praise.*,
+com.fh.controller.serving.release.*,
+com.fh.controller.system.appuser.*,
+com.fh.controller.system.createcode.*,
+com.fh.controller.system.dictionaries.*,
+com.fh.controller.system.head.*,
+com.fh.controller.system.login.*,
+com.fh.controller.system.menu.*,
+com.fh.controller.system.newmodel.*,
+com.fh.controller.system.role.*,
+com.fh.controller.system.secCode.*,
+com.fh.controller.system.tools.*,
+com.fh.controller.system.user.*,
+com.fh.controller.userInfo.bjjduserinfo.*,
+com.fh.controller.weixin.*,
+com.fh.dao.*,
+com.fh.entity.*,
+com.fh.filter.*,
+com.fh.interceptor.*,
+com.fh.listener.*,
+com.fh.plugin.*,
+com.fh.resolver.*,
+com.fh.service.*,
+com.fh.util.*</entry>
+<entry key="app_preset_prof_preset_alloc_p">10</entry>
+<entry key="app_preset_"/>
+<entry key="app_preset_prof_preset_samplingRefreshRate_s">1000</entry>
+<entry key="app_preset_prof_preset_stacks_p">false</entry>
+<entry key="app_preset_prof_preset_roots_p">com.fh.controller.app.appuser.**
+com.fh.controller.app.information.**
+com.fh.controller.app.serving.**
+com.fh.controller.base.**
+com.fh.controller.information.activity.**
+com.fh.controller.information.apply_activity.**
+com.fh.controller.information.celebrity.**
+com.fh.controller.information.oldphoto.**
+com.fh.controller.information.pictures.**
+com.fh.controller.information.praise.**
+com.fh.controller.serving.release.**
+com.fh.controller.system.appuser.**
+com.fh.controller.system.createcode.**
+com.fh.controller.system.dictionaries.**
+com.fh.controller.system.head.**
+com.fh.controller.system.login.**
+com.fh.controller.system.menu.**
+com.fh.controller.system.newmodel.**
+com.fh.controller.system.role.**
+com.fh.controller.system.secCode.**
+com.fh.controller.system.tools.**
+com.fh.controller.system.user.**
+com.fh.controller.userInfo.bjjduserinfo.**
+com.fh.controller.weixin.**
+com.fh.dao.**
+com.fh.entity.**
+com.fh.filter.**
+com.fh.interceptor.**
+com.fh.listener.**
+com.fh.plugin.**
+com.fh.resolver.**
+com.fh.service.**
+com.fh.util.**
+</entry>
+<entry key="profiler.settings.instrument.empty.methods">false</entry>
+<entry key="myeclipse.profiling.mode">0</entry>
+<entry key="profiler.settings.istrument.getter.setter.methods">false</entry>
+<entry key="app_preset_prof_preset_samplingRate_s">100</entry>
+<entry key="app_preset_prof_preset_filterMode_s">true</entry>
+<entry key="app_preset_prof_preset_selector"/>
+<entry key="app_preset_prof_preset_refreshRate_s">1000</entry>
+<entry key="app_preset_prof_preset_runnables_p">true</entry>
+<entry key="app_preset_prof_preset_filterMode_p">false</entry>
+<entry key="app_preset_prof_preset_memoryMode_p">true</entry>
+</properties>

@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="NewMapper">
+<select id="toExcel" parameterType="pd" resultType="pd">
+		select
+			TITLE,	
+			CONTENT,	
+			NEW_HOT,	
+			MINPIC,	
+			CREATENAME,	
+			CREATEDATE,
+			SUMMARY,
+			NEW_ZAN,
+			STATEE,	
+			NEW_ID
+			from 
+			TB_NEW
+		
+	</select>
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into TB_NEW(
+			TITLE,	
+			CONTENT,	
+			NEW_HOT,	
+			MINPIC,	
+			CREATENAME,	
+			CREATEDATE,
+			SUMMARY,
+			NEW_ZAN,
+			STATEE,	
+			NEW_ID
+		) values (
+			#{TITLE},	
+			#{CONTENT},	
+			#{NEW_HOT},	
+			#{MINPIC},	
+			#{CREATENAME},	
+			#{CREATEDATE},
+			#{SUMMARY},
+			#{NEW_ZAN},	
+			#{STATEE},
+			#{NEW_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from TB_NEW
+		where 
+			NEW_ID = #{NEW_ID}
+	</delete>
+	
+		<!-- 删除图片 -->
+	<update id="delTp" parameterType="pd">
+		update  TB_NEW
+			set 
+				MINPIC			= ''
+			where 
+				NEW_ID = #{NEW_ID}
+	</update>
+	
+		<!-- 修改状态 -->
+	<update id="delTpState" parameterType="pd">
+		update  TB_NEW
+			set 
+			  <if test="STATEE != null and STATEE !=''">
+				STATEE = #{STATEE}
+				</if>
+				<if test="NEW_HOT != null and NEW_HOT !=''">
+				NEW_HOT = #{NEW_HOT}
+				</if>
+			where 
+				NEW_ID = #{NEW_ID}
+	</update>
+	
+	<!-- 修改头条状态 -->
+	<update id="istop" parameterType="pd">
+		update  TB_NEW
+		  set 
+			ISTOP=#{ISTOP},
+			NEW_ID = NEW_ID
+			 where 
+			  NEW_ID = #{NEW_ID}
+	</update>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  TB_NEW
+			set 
+				TITLE = #{TITLE},
+				CONTENT = #{CONTENT},
+				NEW_HOT = #{NEW_HOT},
+				MINPIC = #{MINPIC},
+				CREATENAME = #{CREATENAME},
+				NEW_ZAN=#{NEW_ZAN},
+				CREATEDATE = #{CREATEDATE},
+				SUMMARY = #{SUMMARY},
+				STATEE=#{STATEE},
+			NEW_ID = NEW_ID
+			where 
+				NEW_ID = #{NEW_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			TITLE,	
+			CONTENT,	
+			MINPIC,	
+			NEW_HOT,	
+			NEW_ZAN,	
+			CREATENAME,
+			SUMMARY,	
+			CREATEDATE,	
+			STATEE,
+			NEW_ID
+		from 
+			TB_NEW
+		where 
+			NEW_ID = #{NEW_ID}
+	</select>
+	
+	
+		<!-- 通过模糊信息获取数据 -->
+	<select id="datalistPageOther" parameterType="page" resultType="pd">
+		select 
+			TITLE,	
+			CONTENT,	
+			MINPIC,	
+			NEW_HOT,	
+			NEW_ZAN,	
+			CREATENAME,
+			SUMMARY,	
+			CREATEDATE,	
+			STATEE,
+			ISTOP,
+			NEW_ID
+		from 
+			TB_NEW
+		where 
+		<if test="pd.field1!= null and pd.field1 != ''"><!-- 关键词检索 -->
+			and
+				(
+				<!--	根据需求自己加检索条件-->
+					TITLE LIKE CONCAT(CONCAT('%', #{pd.field1}),'%')
+					 or 
+					CONTENT LIKE CONCAT(CONCAT('%', #{pd.field1}),'%') 
+				
+				)
+		</if>
+		
+	</select>
+	
+	
+	
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.TITLE,	
+				a.CONTENT,	
+				a.NEW_HOT,
+				a.MINPIC,	
+				a.NEW_ZAN,	
+				a.CREATENAME,	
+				a.CREATEDATE,	
+				a.SUMMARY,
+				a.STATEE,
+				a.ISTOP,
+				a.NEW_ID
+		from 
+				TB_NEW a
+		where 1=1
+				<!-- 关键词检索 -->
+				<if test="pd.field1!= null and pd.field1 != ''">
+			and
+				(
+				<!--	根据需求自己加检索条件-->
+					TITLE LIKE CONCAT(CONCAT('%', #{pd.field1}),'%')
+				)
+				</if>
+		
+				<if test="pd.field3!= null and pd.field3 != ''">
+			and    CONTENT LIKE CONCAT(CONCAT('%', #{pd.field3}),'%')
+				</if>
+				<if test="pd.lastLoginStart!= null and pd.lastLoginStart != '' and pd.lastLoginEnd!= null and pd.lastLoginEnd != '' ">
+			and    CREATEDATE between #{pd.lastLoginStart} and #{pd.lastLoginEnd}
+				</if>
+					<if test="pd.field4!= null and pd.field4 != ''">
+			and    STATEE LIKE CONCAT(CONCAT('%', #{pd.field4}),'%')
+				</if>
+				order by a.NEW_HOT='0' ,a.CREATEDATE desc
+	</select>
+	<!-- 头条新闻-->
+	<select id="findByIstop" parameterType="page" resultType="pd">
+		select
+			a.TITLE,	
+			a.SUMMARY,
+			a.NEW_HOT,	
+			a.MINPIC,	
+			a.NEW_ZAN,	
+			a.CREATENAME,	
+			a.CREATEDATE,
+			(SELECT COUNT(1) FROM tb_new_comment b WHERE b.NEWID=a.NEW_ID  AND b.STATUS='1') AS NUMB,	
+			a.STATEE,
+			a.NEW_ID
+		from 
+				TB_NEW a
+		   where a.ISTOP= #{ISTOP}
+	</select>
+	
+	<!-- 列表(非头条) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.TITLE,	
+				a.SUMMARY,
+				a.NEW_HOT,	
+				a.MINPIC,	
+				a.NEW_ZAN,	
+				a.CREATENAME,	
+				a.CREATEDATE,
+				(SELECT COUNT(1) FROM tb_new_comment b WHERE b.NEWID=a.NEW_ID  AND b.STATUS='1') AS NUMB,	
+				a.STATEE,
+				a.NEW_ID
+		from 
+				TB_NEW a
+		where  a.STATEE='0' and a.ISTOP='0'
+				order by a.NEW_HOT='0' ,a.CREATEDATE desc
+	         limit #{pageIndex},5
+	</select>
+	<!-- 取得上架的新闻条数 -->
+	
+	<select id="getNewsNbr" parameterType="pd" resultType="int">
+		select
+				count(1)
+		from 
+				TB_NEW a
+		where  a.STATEE=#{STATEE}
+	</select>
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from TB_NEW
+		where 
+			NEW_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<select id="findCountByNewId" parameterType="pd" resultType="pd">
+	SELECT
+ 	n.NEW_ID,
+  	(SELECT COUNT(1) FROM tb_new_comment c
+  	 WHERE n.NEW_ID=c.NEWID and c.STATUS=1  ) AS NUMB
+	FROM
+ 	tb_new n
+	</select>
+	
+	
+	
+	
+</mapper>

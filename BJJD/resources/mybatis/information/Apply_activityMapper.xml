@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Apply_activityMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into TB_APPLY_ACTIVITY(
+			ACTIVITY_ID,	
+			USER_ID,	
+			CREATEDATE,	
+			APPLY_ACTIVITY_ID
+		) values (
+			#{ACTIVITY_ID},	
+			#{USER_ID},	
+			#{CREATEDATE},	
+			#{APPLY_ACTIVITY_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from TB_APPLY_ACTIVITY
+		where 
+			APPLY_ACTIVITY_ID = #{APPLY_ACTIVITY_ID}
+	</delete>
+	
+	<!-- 删除-->
+	<delete id="deleteUserIdAndAtiviiy" parameterType="pd">
+		delete from TB_APPLY_ACTIVITY
+		where 
+			ACTIVITY_ID = #{ACTIVITY_ID} and USER_ID=#{USER_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  TB_APPLY_ACTIVITY
+			set 
+			APPLY_ACTIVITY_ID = APPLY_ACTIVITY_ID
+			where 
+				APPLY_ACTIVITY_ID = #{APPLY_ACTIVITY_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 	
+			ACTIVITY_ID,	
+			USER_ID,	
+			CREATEDATE,	
+			APPLY_ACTIVITY_ID
+		from 
+			TB_APPLY_ACTIVITY
+		where 
+			APPLY_ACTIVITY_ID = #{APPLY_ACTIVITY_ID}
+	</select>
+	
+	<!-- 通过活动ID获取数据 -->
+	<select id="findByActivityId" parameterType="pd" resultType="pd">
+		select 
+			ACTIVITY_ID,	
+			USER_ID	
+		from 
+			TB_APPLY_ACTIVITY
+		where 
+			ACTIVITY_ID = #{ACTIVITY_ID}
+	</select>
+	
+	<!-- 通过userID获取数据 -->
+	<select id="findUserId" parameterType="pd" resultType="pd">
+		select 
+			ACTIVITY_ID	
+		from 
+			TB_APPLY_ACTIVITY
+		where 
+			USER_ID = #{USER_ID}
+	</select>
+	
+	<!-- 通过userID and ACTIVITY_ID 获取数据 -->
+	<select id="findUserIdAndActivityId" parameterType="pd" resultType="pd">
+		select 
+			ACTIVITY_ID
+		from 
+			TB_APPLY_ACTIVITY
+		where 
+			USER_ID = #{USER_ID} and ACTIVITY_ID = #{ACTIVITY_ID}
+	</select>
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.ACTIVITY_ID,	
+				a.USER_ID,	
+				a.CREATEDATE,	
+				a.APPLY_ACTIVITY_ID,
+				b.USERNAME,
+				b.LINKNBR
+		from 
+				TB_APPLY_ACTIVITY a , TB_BJJDUSERINFO b 
+		where 
+				a.USER_ID=b.BJJDUSERINFO_ID and a.ACTIVITY_ID= #{pd.ACTIVITY_ID}
+				<if test="pd.lastLoginStart!= null and pd.lastLoginStart != '' and pd.lastLoginEnd!= null and pd.lastLoginEnd != '' ">
+			and    a.CREATEDATE between #{pd.lastLoginStart} and #{pd.lastLoginEnd}
+				</if>
+				<if test="pd.field1!= null and pd.field1 != ''">
+			and
+					b.USERNAME LIKE CONCAT(CONCAT('%', #{pd.field1}),'%')
+				</if>
+		
+				<if test="pd.field3!= null and pd.field3 != ''">
+			and    b.LINKNBR LIKE CONCAT(CONCAT('%', #{pd.field3}),'%')
+				</if>
+	</select>
+	
+	
+	
+		<!-- 列表 -->
+	<select id="AllName" parameterType="pd" resultType="pd">
+		select
+				a.ACTIVITY_ID,	
+				a.USER_ID,	
+				a.CREATEDATE,	
+				a.APPLY_ACTIVITY_ID,
+				b.USERNAME,
+				b.LINKNBR
+		from 
+				TB_APPLY_ACTIVITY a , TB_BJJDUSERINFO b 
+		where 
+				a.USER_ID=b.BJJDUSERINFO_ID and a.ACTIVITY_ID= #{ACTIVITY_ID}
+	</select>
+	
+	
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+			select
+				a.ACTIVITY_ID,	
+				a.USER_ID,	
+				a.CREATEDATE,	
+				a.APPLY_ACTIVITY_ID,
+				b.USERNAME,
+				b.LINKNBR
+		from 
+				TB_APPLY_ACTIVITY a , TB_BJJDUSERINFO b 
+		where 
+				a.USER_ID=b.BJJDUSERINFO_ID and a.ACTIVITY_ID= #{ACTIVITY_ID}
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from TB_APPLY_ACTIVITY
+		where 
+			APPLY_ACTIVITY_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	
+	<!-- 删除 结束时间小于当前时间的活动人-->
+	<delete id="deleteTime" parameterType="pd">
+		DELETE FROM tb_apply_activity
+		where 
+		ACTIVITY_ID in (select ACTIVITY_ID from tb_activity b where #{ENDTIME}> b.ENDTIME )
+	</delete>
+	
+</mapper>

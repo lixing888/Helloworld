@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WorkGuanliMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into TB_WORK_GUANLI(
+			ID,	
+			WORKNAME,	
+			ASSIGNER,	
+			BUMENNAME,	
+			ASSIGNDATE,	
+			STATUS,	
+			TYPE,
+			CONTENT,
+			FANKUI,
+			FILENAME,
+			WORKGUANLI_ID
+		) values (
+			#{ID},	
+			#{WORKNAME},	
+			#{ASSIGNER},	
+			#{BUMENNAME},	
+			#{ASSIGNDATE},	
+			'1',	
+			#{TYPE},
+			#{CONTENT},
+			#{FANKUI},
+			#{FILENAME},
+			#{WORKGUANLI_ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from TB_WORK_GUANLI
+		where 
+			WORKGUANLI_ID = #{WORKGUANLI_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  TB_WORK_GUANLI
+			set 
+				WORKNAME = #{WORKNAME},
+				ASSIGNER = #{ASSIGNER},
+				BUMENNAME = #{BUMENNAME},
+				ASSIGNDATE = #{ASSIGNDATE},
+				STATUS = '2',
+				TYPE = #{TYPE},
+				CONTENT = #{CONTENT},
+				FILENAME = #{FILENAME},
+			WORKGUANLI_ID = WORKGUANLI_ID
+			where 
+				WORKGUANLI_ID = #{WORKGUANLI_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			ID,	
+			WORKNAME,	
+			ASSIGNER,	
+			BUMENNAME,	
+			ASSIGNDATE,	
+			STATUS,	
+			TYPE,
+			CONTENT,
+			FANKUI,
+			FILENAME,
+			WORKGUANLI_ID
+		from 
+			TB_WORK_GUANLI
+		where 
+			WORKGUANLI_ID = #{WORKGUANLI_ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+				a.ID,	
+				a.WORKNAME,	
+				a.ASSIGNER,	
+				a.BUMENNAME,	
+				a.ASSIGNDATE,	
+				a.STATUS,
+				a.TYPE,
+				a.CONTENT,
+				a.FANKUI,	
+				a.FILENAME,
+				a.WORKGUANLI_ID
+		from 
+				TB_WORK_GUANLI a
+				   where 1=1
+				<if test="pd.workName!= null and pd.workName!= ''">
+			        and WORKNAME LIKE CONCAT(CONCAT('%', #{pd.workName}),'%') 
+				</if>
+				<if test="pd.creater!= null and pd.creater!= ''">
+			        and ASSIGNER LIKE CONCAT(CONCAT('%', #{pd.creater}),'%') 
+				</if>
+				<if test="pd.buMenName1!= null and pd.buMenName1!= ''">
+			        and BUMENNAME = #{pd.buMenName1} 
+				</if>
+				<if test="pd.type1!= null and pd.type1!= ''">
+			        and TYPE = #{pd.type1} 
+				</if>
+				<if test="pd.lastLoginStart!= null and pd.lastLoginStart != '' and pd.lastLoginEnd!= null and pd.lastLoginEnd != '' ">
+			        and ASSIGNDATE between #{pd.lastLoginStart} and #{pd.lastLoginEnd}
+				</if>
+				 order by a.ASSIGNDATE desc
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+				a.ID,	
+				a.WORKNAME,	
+				a.ASSIGNER,	
+				a.BUMENNAME,	
+				a.ASSIGNDATE,	
+				a.STATUS,
+				a.TYPE,	
+				a.FANKUI,
+				a.FILENAME,
+				a.WORKGUANLI_ID
+		from 
+				TB_WORK_GUANLI a
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from TB_WORK_GUANLI
+		where 
+			WORKGUANLI_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>
